@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona.local/schema/persona-report.schema.json",
+  "title": "Persona Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title",
+    "slug",
+    "created_at",
+    "language",
+    "idea_type",
+    "grounding_mode",
+    "sampling_method",
+    "input",
+    "evidence_packet",
+    "sampling_dimensions",
+    "personas",
+    "verdict_metrics",
+    "hard_nos",
+    "objections_to_beat",
+    "next_experiment"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "language": {
+      "type": "string",
+      "minLength": 2
+    },
+    "idea_type": {
+      "type": "string",
+      "enum": ["B2B", "B2C", "marketplace/platform"]
+    },
+    "grounding_mode": {
+      "type": "string",
+      "enum": ["web-grounded", "user-provided", "ungrounded"]
+    },
+    "sampling_method": {
+      "type": "string",
+      "enum": ["halton"]
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["idea", "target_user", "use_case", "price", "links", "user_context"],
+      "properties": {
+        "idea": { "type": "string" },
+        "target_user": { "type": "string" },
+        "use_case": { "type": "string" },
+        "price": { "type": ["string", "null"] },
+        "links": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "user_context": { "type": "string" }
+      }
+    },
+    "evidence_packet": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "claim", "relevance"],
+        "properties": {
+          "source": { "type": "string" },
+          "url": { "type": "string" },
+          "claim": { "type": "string" },
+          "relevance": { "type": "string" }
+        }
+      }
+    },
+    "sampling_dimensions": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": { "type": "string" }
+    },
+    "personas": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "dimensions",
+          "sampling_coordinates",
+          "map_position",
+          "verdict",
+          "objection",
+          "what_would_change_their_mind"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^P[0-9]{2}$"
+          },
+          "label": { "type": "string" },
+          "dimensions": {
+            "type": "object",
+            "minProperties": 6,
+            "maxProperties": 6,
+            "additionalProperties": { "type": "string" }
+          },
+          "sampling_coordinates": {
+            "type": "object",
+            "minProperties": 6,
+            "maxProperties": 6,
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMaximum": 1
+            }
+          },
+          "map_position": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["x", "y"],
+            "properties": {
+              "x": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "y": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          },
+          "verdict": {
+            "type": "string",
+            "enum": ["WOULD_PAY", "NEEDS_PROOF", "HARD_NO"]
+          },
+          "objection": { "type": "string" },
+          "what_would_change_their_mind": { "type": "string" }
+        }
+      }
+    },
+    "verdict_metrics": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "score", "reason"],
+        "properties": {
+          "name": { "type": "string" },
+          "score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "hard_nos": {
+      "type": "array",
+      "maxItems": 5,
+      "items": { "type": "string" }
+    },
+    "objections_to_beat": {
+      "type": "array",
+      "maxItems": 5,
+      "items": { "type": "string" }
+    },
+    "next_experiment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "why", "success_signal"],
+      "properties": {
+        "action": { "type": "string" },
+        "why": { "type": "string" },
+        "success_signal": { "type": "string" }
+      }
+    }
+  }
+}
