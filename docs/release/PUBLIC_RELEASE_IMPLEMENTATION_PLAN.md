@@ -152,17 +152,18 @@ Gate conditions:
 Recommended decision: use a GitHub `noreply` address and remove machine-specific
 paths before publication.
 
-- [ ] Confirm whether the existing personal email may remain in public Git
-      history.
-- [ ] Confirm whether the `guido` username may remain in archived documents.
-- [ ] Configure the approved Git author name and email for all new commits.
+- [x] Confirm whether the existing personal email may remain in public Git
+      history. Decision: remove it.
+- [x] Confirm whether the `guido` username may remain in archived documents.
+      Decision: remove machine-specific identity paths.
+- [x] Configure the approved Git author name and email for all new commits.
 
 If the existing email must be removed:
 
-- [ ] Finish and commit the intended work before manipulating history.
-- [ ] Make a separate backup or clone.
-- [ ] Rewrite the author and committer email in an isolated clone.
-- [ ] Verify every rewritten commit and tag.
+- [x] Finish and commit the intended work before manipulating history.
+- [x] Make a separate backup or clone.
+- [x] Rewrite the author and committer email in an isolated clone.
+- [x] Verify every rewritten commit and tag.
 - [ ] Request explicit approval before force-pushing the private repository.
 
 ### 2.2 Sanitize publishable content
@@ -193,7 +194,7 @@ git diff --check
 Gate conditions:
 
 - [x] Both Gitleaks scans report no leaks.
-- [ ] Every remaining identity reference is explicitly approved.
+- [x] Every remaining identity reference is explicitly approved.
 - [x] Ignored generated tooling and reports are not staged.
 - [x] No large or unexpected binary file is included.
 
@@ -214,16 +215,16 @@ For each case, run:
 
 Tasks:
 
-- [ ] Produce six JSON/HTML report pairs in a temporary evaluation directory.
-- [ ] Validate every pair.
-- [ ] Compare normalized ideas across each framing pair.
-- [ ] Compare recommendation values across each framing pair.
-- [ ] Compare material `Hard No` themes across each framing pair.
-- [ ] Confirm changing decisive evidence can change the recommendation.
-- [ ] Confirm positions cover distinct refusal conditions.
-- [ ] Confirm no report presents positions as votes, customers, probabilities,
+- [x] Produce six JSON/HTML report pairs in a temporary evaluation directory.
+- [x] Validate every pair.
+- [x] Compare normalized ideas across each framing pair.
+- [x] Compare recommendation values across each framing pair.
+- [x] Compare material `Hard No` themes across each framing pair.
+- [x] Confirm changing decisive evidence can change the recommendation.
+- [x] Confirm positions cover distinct refusal conditions.
+- [x] Confirm no report presents positions as votes, customers, probabilities,
       market shares, or representative research.
-- [ ] Confirm every report ends with one action, success threshold, and kill
+- [x] Confirm every report ends with one action, success threshold, and kill
       threshold.
 
 Score every report from 1-5 on:
@@ -238,18 +239,19 @@ Score every report from 1-5 on:
 - actionability
 - concision
 
-- [ ] Record the prompts, results, scorecard, reviewer notes, and any revisions
+- [x] Record the prompts, results, scorecard, reviewer notes, and any revisions
       in `docs/release/v0.1.0-evaluation.md` or the release PR.
-- [ ] Revise the skill or renderer whenever any dimension scores below 4.
-- [ ] Re-run all affected cases after a revision.
+- [x] Revise the skill or renderer whenever any dimension scores below 4. No
+      revision was required because no dimension scored below 4.
+- [x] Re-run all affected cases after a revision. No cases were affected.
 
 Acceptance gate:
 
-- [ ] All nine dimensions score at least 4/5 for every report.
-- [ ] Equivalent framing pairs produce the same recommendation value.
-- [ ] Material objections remain stable across equivalent framing pairs.
-- [ ] Decisive evidence changes can change the recommendation.
-- [ ] All six final report pairs pass the checker.
+- [x] All nine dimensions score at least 4/5 for every report.
+- [x] Equivalent framing pairs produce the same recommendation value.
+- [x] Material objections remain stable across equivalent framing pairs.
+- [x] Decisive evidence changes can change the recommendation.
+- [x] All six final report pairs pass the checker.
 
 ## Phase 4: Add Repeatable Release Validation
 
@@ -261,15 +263,15 @@ Target:
 
 Use pinned action versions. CI should:
 
-- [ ] Parse all JSON files used by the plugin and marketplace.
-- [ ] Run `node --check` on every runtime `.mjs` file.
-- [ ] Run dependency-free Node tests.
-- [ ] Verify sampler determinism.
-- [ ] Copy the golden report into a temporary directory.
-- [ ] Apply sampling, regenerate HTML, and validate the temporary pair.
-- [ ] Compare the regenerated files byte-for-byte with committed golden files.
-- [ ] Run Gitleaks using a pinned action or pinned binary.
-- [ ] Fail on whitespace errors or unexpected generated files where practical.
+- [x] Parse all JSON files used by the plugin and marketplace.
+- [x] Run `node --check` on every runtime `.mjs` file.
+- [x] Run dependency-free Node tests.
+- [x] Verify sampler determinism.
+- [x] Copy the golden report into a temporary directory.
+- [x] Apply sampling, regenerate HTML, and validate the temporary pair.
+- [x] Compare the regenerated files byte-for-byte with committed golden files.
+- [x] Run Gitleaks using a pinned action or pinned binary.
+- [x] Fail on whitespace errors or unexpected generated files where practical.
 
 Do not vendor the Codex creator tools. Keep their validators as a documented
 local release gate unless a stable official CI installation route is available.
@@ -283,13 +285,13 @@ Targets:
 
 Tasks:
 
-- [ ] State that Codex must expose the `codex plugin` command.
-- [ ] State that a working `node` executable is required.
-- [ ] Keep the shortest verified marketplace install flow prominent.
-- [ ] Keep update instructions aligned with the tested CLI flow.
+- [x] State that Codex must expose the `codex plugin` command.
+- [x] State that a working `node` executable is required.
+- [x] Keep the shortest verified marketplace install flow prominent.
+- [x] Keep update instructions aligned with the tested CLI flow.
 - [ ] Confirm the golden report and sample-input links resolve on GitHub.
-- [ ] Confirm the feedback route asks the three approved questions.
-- [ ] Avoid unverified claims about market validation, prediction, or outcomes.
+- [x] Confirm the feedback route asks the three approved questions.
+- [x] Avoid unverified claims about market validation, prediction, or outcomes.
 
 ### 4.3 Run official creator validators locally
 
@@ -311,9 +313,9 @@ python3 "$HOME/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py" 
 Acceptance gate:
 
 - [ ] CI passes from a clean checkout.
-- [ ] Official skill validation passes.
-- [ ] Official plugin validation passes.
-- [ ] README prerequisites and commands match the tested environment.
+- [x] Official skill validation passes.
+- [x] Official plugin validation passes.
+- [x] README prerequisites and commands match the tested environment.
 
 ## Phase 5: Commit and Test the Private Release Candidate
 

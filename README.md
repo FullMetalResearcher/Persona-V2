@@ -33,6 +33,11 @@ research.
 
 ## Install
 
+Prerequisites:
+
+- a Codex installation where `codex plugin --help` exposes the plugin commands
+- a working `node` executable for the bundled dependency-free scripts
+
 Add the repository marketplace and install the plugin:
 
 ```bash
