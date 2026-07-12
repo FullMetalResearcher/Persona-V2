@@ -1,7 +1,7 @@
 # Persona Conversation Summary
 
 Date: 2026-06-29
-Workspace: `$HOME/Desktop/Persona`
+Workspace: `<repo>`
 
 ## Setup
 

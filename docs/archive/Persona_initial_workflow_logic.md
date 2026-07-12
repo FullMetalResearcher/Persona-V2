@@ -1,6 +1,6 @@
 # Persona Initial Version - Workflow Logic Report
 
-Source inspected: `$HOME/Desktop/Persona_initial_version/Persona-main`
+Source inspected: `$LEGACY_REPO`
 
 This report documents the logic adopted by the recovered initial version of Persona, which was named `T2B` in the project files. The product is a synthetic market feedback tool: the user pastes a project or product description, the app generates sixteen synthetic personas, each persona reacts to the idea, and the UI clusters the results into market signal.
 
@@ -35,7 +35,7 @@ The recovered repo is a compact full-stack prototype:
 | `server/index.js` | Minimal Express server, Gemini proxy, cost tracking, static `dist` serving. |
 | `vite.config.js` | Vite dev server and `/api` proxy to Express. |
 
-The app uses React 18, Vite, Express, Gemini, `lobos` for Sobol sampling, and `p-limit` for fan-out. See [package.json]($HOME/Desktop/Persona_initial_version/Persona-main/package.json:6).
+The app uses React 18, Vite, Express, Gemini, `lobos` for Sobol sampling, and `p-limit` for fan-out. See [package.json]($LEGACY_REPO/package.json:6).
 
 ## Runtime Architecture
 
@@ -57,7 +57,7 @@ flowchart TD
     M --> N["Render beachhead, objections, unlocks"]
 ```
 
-The browser mounts `App` from [src/main.jsx]($HOME/Desktop/Persona_initial_version/Persona-main/src/main.jsx:5). The app imports the static personas, Sobol sampler, generation pipeline, and synthesis flow at [src/App.jsx]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:1).
+The browser mounts `App` from [src/main.jsx]($LEGACY_REPO/src/main.jsx:5). The app imports the static personas, Sobol sampler, generation pipeline, and synthesis flow at [src/App.jsx]($LEGACY_REPO/src/App.jsx:1).
 
 ## Core Workflow Logic
 
@@ -73,9 +73,9 @@ The browser mounts `App` from [src/main.jsx]($HOME/Desktop/Persona_initial_versi
 - `drawer`: whether the methodology drawer is open.
 - `synthesis`: the final strategic summary.
 
-These state fields are declared around [src/App.jsx:799]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:799).
+These state fields are declared around [src/App.jsx:799]($LEGACY_REPO/src/App.jsx:799).
 
-The static `PERSONAS` list is not only placeholder UI data. It also provides the prewritten fragment bundles used during live generation. The file describes the locked persona schema and fallback distribution at [src/components/personas.js:1]($HOME/Desktop/Persona_initial_version/Persona-main/src/components/personas.js:1).
+The static `PERSONAS` list is not only placeholder UI data. It also provides the prewritten fragment bundles used during live generation. The file describes the locked persona schema and fallback distribution at [src/components/personas.js:1]($LEGACY_REPO/src/components/personas.js:1).
 
 ### 2. User Starts A Run
 
@@ -89,7 +89,7 @@ When the user clicks the main button, `start()` executes:
 - Fragment bundles are pulled from the static personas.
 - `generatePersonas()` is called with a callback that updates one persona at a time.
 
-This is implemented at [src/App.jsx:834]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:834).
+This is implemented at [src/App.jsx:834]($LEGACY_REPO/src/App.jsx:834).
 
 ### 3. Sobol Sampling Creates The Market Space
 
@@ -100,7 +100,7 @@ The project uses four fixed axes:
 - `problem_urgency`: `vague-curiosity`, `considering`, `active-pain`, `burning-now`
 - `region`: `North America`, `Europe`, `APAC`, `LATAM`
 
-The `sobolSample(n)` function calls `new Sobol(4).take(n)`, then `mapToAxes()` buckets each raw coordinate into one of four values per axis. See [src/lib/sobol.ts:8]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/sobol.ts:8) and [src/lib/sobol.ts:22]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/sobol.ts:22).
+The `sobolSample(n)` function calls `new Sobol(4).take(n)`, then `mapToAxes()` buckets each raw coordinate into one of four values per axis. See [src/lib/sobol.ts:8]($LEGACY_REPO/src/lib/sobol.ts:8) and [src/lib/sobol.ts:22]($LEGACY_REPO/src/lib/sobol.ts:22).
 
 Why Sobol matters here:
 
@@ -109,7 +109,7 @@ Why Sobol matters here:
 - It preserves raw continuous values for the methodology scatterplot.
 - It also stores bucketed values for the prompt.
 
-The methodology drawer says this explicitly in the UI: each persona is fixed by a Sobol quasi-random point, and the final cluster is the result of each persona reacting to the product, not a label assigned up front. See [src/App.jsx:634]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:634).
+The methodology drawer says this explicitly in the UI: each persona is fixed by a Sobol quasi-random point, and the final cluster is the result of each persona reacting to the product, not a label assigned up front. See [src/App.jsx:634]($LEGACY_REPO/src/App.jsx:634).
 
 ### 4. Persona Generation Fan-Out
 
@@ -132,13 +132,13 @@ For each Sobol point, it:
 8. Deduplicates repeated names.
 9. Fires `onPersonaReady()` as soon as that persona resolves.
 
-This flow is in [src/lib/pipeline.ts:22]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/pipeline.ts:22).
+This flow is in [src/lib/pipeline.ts:22]($LEGACY_REPO/src/lib/pipeline.ts:22).
 
-The reveal callback is the key UI logic. It is fired at [src/lib/pipeline.ts:65]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/pipeline.ts:65), then `App` replaces that single persona and adds its id to the `resolved` set at [src/App.jsx:845]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:845).
+The reveal callback is the key UI logic. It is fired at [src/lib/pipeline.ts:65]($LEGACY_REPO/src/lib/pipeline.ts:65), then `App` replaces that single persona and adds its id to the `resolved` set at [src/App.jsx:845]($LEGACY_REPO/src/App.jsx:845).
 
 This makes the reveal promise-resolution-driven. The silhouettes do not appear on a fixed timer. They appear when their corresponding AI calls finish.
 
-One implementation note: the original project docs say `p-limit(4)` was intended, but the current code sets `pLimit(16)` at [src/lib/pipeline.ts:20]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/pipeline.ts:20). That means all sixteen persona calls can run concurrently.
+One implementation note: the original project docs say `p-limit(4)` was intended, but the current code sets `pLimit(16)` at [src/lib/pipeline.ts:20]($LEGACY_REPO/src/lib/pipeline.ts:20). That means all sixteen persona calls can run concurrently.
 
 ### 5. Prompt Logic
 
@@ -154,9 +154,9 @@ The prompt tells Gemini to become the persona, react to the product, and choose 
 - `NEEDS_PROOF`
 - `HARD_NO`
 
-It also imposes strong voice constraints: direct editor voice, concrete day-to-day references, no generic AI phrasing, no startup cliches, no broad abstractions, and citation of only the fragments that directly informed the decision. See [src/lib/persona-prompt.ts:22]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/persona-prompt.ts:22).
+It also imposes strong voice constraints: direct editor voice, concrete day-to-day references, no generic AI phrasing, no startup cliches, no broad abstractions, and citation of only the fragments that directly informed the decision. See [src/lib/persona-prompt.ts:22]($LEGACY_REPO/src/lib/persona-prompt.ts:22).
 
-`problem_urgency` changes persona behavior through `URGENCY_TONE`. For example, `burning-now` explicitly biases toward action unless the product clearly cannot help. See [src/lib/persona-prompt.ts:3]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/persona-prompt.ts:3).
+`problem_urgency` changes persona behavior through `URGENCY_TONE`. For example, `burning-now` explicitly biases toward action unless the product clearly cannot help. See [src/lib/persona-prompt.ts:3]($LEGACY_REPO/src/lib/persona-prompt.ts:3).
 
 The expected output is fenced JSON with:
 
@@ -171,7 +171,7 @@ The parser then attaches runtime fields like `id`, `fragments`, `sobol_position`
 
 ### 6. Parsing And Failure Logic
 
-`parsePersona()` strips markdown fences, parses JSON, validates all required fields, validates the decision enum, and filters hallucinated source indices. See [src/lib/parse-persona.ts:5]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/parse-persona.ts:5).
+`parsePersona()` strips markdown fences, parses JSON, validates all required fields, validates the decision enum, and filters hallucinated source indices. See [src/lib/parse-persona.ts:5]($LEGACY_REPO/src/lib/parse-persona.ts:5).
 
 Failures do not break the workflow. `fallbackPersona()` returns a valid `Persona` with:
 
@@ -191,9 +191,9 @@ The visual market map clusters personas by their decision:
 - middle: `NEEDS_PROOF`
 - right: `HARD_NO`
 
-The mapping from locked schema values to internal layout keys lives in `DKEY` at [src/App.jsx:21]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:21).
+The mapping from locked schema values to internal layout keys lives in `DKEY` at [src/App.jsx:21]($LEGACY_REPO/src/App.jsx:21).
 
-`clusterLayout()` groups personas by decision, gives each cluster a center, places each member around an ellipse, then runs collision relaxation so silhouettes do not overlap badly. It also clamps personas into their horizontal decision lanes. See [src/App.jsx:38]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:38).
+`clusterLayout()` groups personas by decision, gives each cluster a center, places each member around an ellipse, then runs collision relaxation so silhouettes do not overlap badly. It also clamps personas into their horizontal decision lanes. See [src/App.jsx:38]($LEGACY_REPO/src/App.jsx:38).
 
 This means the x-position on the main sheet is not the Sobol coordinate. The main sheet is an outcome cluster. The Sobol coordinates are shown separately in the methodology drawer's scatterplot.
 
@@ -213,17 +213,17 @@ Clicking a silhouette opens a panel with:
 - source fragments and links,
 - a low-grounding indicator when applicable.
 
-The panel starts at [src/App.jsx:414]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:414). It highlights the most product-relevant sentence from the reasoning using `pickFeedbackSentence()` at [src/App.jsx:370]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:370).
+The panel starts at [src/App.jsx:414]($LEGACY_REPO/src/App.jsx:414). It highlights the most product-relevant sentence from the reasoning using `pickFeedbackSentence()` at [src/App.jsx:370]($LEGACY_REPO/src/App.jsx:370).
 
 #### Methodology Drawer
 
-The methodology drawer explains how the market was created, visualizes Sobol positions across selectable axis pairs, and lists source provenance for every persona. It starts at [src/App.jsx:580]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:580).
+The methodology drawer explains how the market was created, visualizes Sobol positions across selectable axis pairs, and lists source provenance for every persona. It starts at [src/App.jsx:580]($LEGACY_REPO/src/App.jsx:580).
 
-The scatterplot uses raw Sobol coordinates from `persona.sobol_position`, not the final cluster coordinates. See [src/App.jsx:710]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:710).
+The scatterplot uses raw Sobol coordinates from `persona.sobol_position`, not the final cluster coordinates. See [src/App.jsx:710]($LEGACY_REPO/src/App.jsx:710).
 
 ### 9. Synthesis Pass
 
-After all sixteen personas finish, `start()` marks the phase `"ready"` and calls `generateSynthesis(finalPersonas)`. See [src/App.jsx:864]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:864).
+After all sixteen personas finish, `start()` marks the phase `"ready"` and calls `generateSynthesis(finalPersonas)`. See [src/App.jsx:864]($LEGACY_REPO/src/App.jsx:864).
 
 The synthesis prompt asks Gemini to read all sixteen reactions and produce:
 
@@ -231,7 +231,7 @@ The synthesis prompt asks Gemini to read all sixteen reactions and produce:
 - `objections`: two to three blockers from `NEEDS_PROOF` and `HARD_NO`,
 - `unlocks`: two to three concrete asks that would convert doubters.
 
-Each objection or unlock must cite supporting persona ids. Themes citing fewer than two personas are dropped client-side. See [src/lib/synthesis-prompt.ts:31]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/synthesis-prompt.ts:31) and [src/lib/synthesis-prompt.ts:91]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/synthesis-prompt.ts:91).
+Each objection or unlock must cite supporting persona ids. Themes citing fewer than two personas are dropped client-side. See [src/lib/synthesis-prompt.ts:31]($LEGACY_REPO/src/lib/synthesis-prompt.ts:31) and [src/lib/synthesis-prompt.ts:91]($LEGACY_REPO/src/lib/synthesis-prompt.ts:91).
 
 The rendered synthesis has three user-facing sections:
 
@@ -239,7 +239,7 @@ The rendered synthesis has three user-facing sections:
 - "what's stopping the rest"
 - "what unlocks them"
 
-Rendering happens in [src/components/synthesis.jsx:10]($HOME/Desktop/Persona_initial_version/Persona-main/src/components/synthesis.jsx:10).
+Rendering happens in [src/components/synthesis.jsx:10]($LEGACY_REPO/src/components/synthesis.jsx:10).
 
 ## Backend And API Boundaries
 
@@ -250,7 +250,7 @@ The backend is intentionally small. Express exposes:
 | `GET /api/cost` | Returns in-memory total Gemini spend and the soft abort threshold. |
 | `POST /api/gemini` | Accepts a prompt, calls Gemini, returns generated text plus token and cost metadata. |
 
-The server initializes Gemini with `GEMINI_API_KEY` and model `gemini-2.5-flash` at [server/index.js:15]($HOME/Desktop/Persona_initial_version/Persona-main/server/index.js:15).
+The server initializes Gemini with `GEMINI_API_KEY` and model `gemini-2.5-flash` at [server/index.js:15]($LEGACY_REPO/server/index.js:15).
 
 Cost tracking is process-memory only:
 
@@ -259,11 +259,11 @@ Cost tracking is process-memory only:
 - input and output token counts are priced after each successful call
 - once `totalUsd >= 15`, `/api/gemini` returns `429` with `error: "cost-cap"`
 
-See [server/index.js:7]($HOME/Desktop/Persona_initial_version/Persona-main/server/index.js:7) and [server/index.js:34]($HOME/Desktop/Persona_initial_version/Persona-main/server/index.js:34).
+See [server/index.js:7]($LEGACY_REPO/server/index.js:7) and [server/index.js:34]($LEGACY_REPO/server/index.js:34).
 
 There is no database, user account system, persistent run storage, queue, job table, or server-side workflow state. The frontend owns the run state. The server owns the API key, Gemini calls, and cost guard.
 
-During local development, Vite runs on port 3000 and proxies `/api` to Express on port 8080. See [vite.config.js]($HOME/Desktop/Persona_initial_version/Persona-main/vite.config.js:6).
+During local development, Vite runs on port 3000 and proxies `/api` to Express on port 8080. See [vite.config.js]($LEGACY_REPO/vite.config.js:6).
 
 ## State Machine
 
@@ -275,7 +275,7 @@ The app has a simple state machine:
 | `resolving` | Persona calls are in flight | Status shows `Resolving sixteen personas - N of 16`; silhouettes appear one by one. |
 | `ready` | All personas returned or fell back | User can click silhouettes, open methodology, and read synthesis once it arrives. |
 
-The phase text is rendered at [src/App.jsx:895]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:895).
+The phase text is rendered at [src/App.jsx:895]($LEGACY_REPO/src/App.jsx:895).
 
 The model is tolerant of partial failure: a run can still become `"ready"` even if some personas are fallback personas.
 
@@ -341,10 +341,10 @@ Product description
 
 If you want to revive or evolve this version, read these in order:
 
-1. [src/App.jsx]($HOME/Desktop/Persona_initial_version/Persona-main/src/App.jsx:785) - the orchestration and UI state.
-2. [src/lib/pipeline.ts]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/pipeline.ts:22) - the generation workflow.
-3. [src/lib/persona-prompt.ts]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/persona-prompt.ts:22) - the core persona contract.
-4. [src/lib/sobol.ts]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/sobol.ts:8) - the market sampling scheme.
-5. [src/lib/synthesis-prompt.ts]($HOME/Desktop/Persona_initial_version/Persona-main/src/lib/synthesis-prompt.ts:31) - the founder-facing synthesis contract.
-6. [server/index.js]($HOME/Desktop/Persona_initial_version/Persona-main/server/index.js:34) - the API and cost boundary.
+1. [src/App.jsx]($LEGACY_REPO/src/App.jsx:785) - the orchestration and UI state.
+2. [src/lib/pipeline.ts]($LEGACY_REPO/src/lib/pipeline.ts:22) - the generation workflow.
+3. [src/lib/persona-prompt.ts]($LEGACY_REPO/src/lib/persona-prompt.ts:22) - the core persona contract.
+4. [src/lib/sobol.ts]($LEGACY_REPO/src/lib/sobol.ts:8) - the market sampling scheme.
+5. [src/lib/synthesis-prompt.ts]($LEGACY_REPO/src/lib/synthesis-prompt.ts:31) - the founder-facing synthesis contract.
+6. [server/index.js]($LEGACY_REPO/server/index.js:34) - the API and cost boundary.
 

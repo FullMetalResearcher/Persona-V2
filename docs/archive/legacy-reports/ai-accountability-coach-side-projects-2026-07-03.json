@@ -1,0 +1,276 @@
+{
+  "title": "AI Accountability Coach For Side Projects",
+  "slug": "ai-accountability-coach-side-projects",
+  "created_at": "2026-07-03",
+  "language": "en",
+  "idea_type": "B2C",
+  "grounding_mode": "web-grounded",
+  "input": {
+    "idea": "AI accountability coach for people trying to finish side projects.",
+    "target_user": "Individuals trying to finish a personal side project while juggling work, school, or life.",
+    "use_case": "They would use it when momentum drops and they need accountability to keep shipping small progress.",
+    "price": null,
+    "links": [],
+    "user_context": "User requested a B2C Persona run."
+  },
+  "evidence_packet": [
+    {
+      "source": "Focusmate",
+      "url": "https://www.focusmate.com/",
+      "claim": "Focusmate sells virtual body doubling with scheduled sessions, partners, and millions of completed focus sessions.",
+      "relevance": "The behavior people pay for is external presence and scheduled commitment, not advice alone."
+    },
+    {
+      "source": "stickK",
+      "url": "https://www.stickk.com/",
+      "claim": "stickK uses commitment contracts, money stakes, referees, supporters, and goal communities.",
+      "relevance": "Accountability demand exists, but credible pressure often comes from stakes or humans."
+    },
+    {
+      "source": "Coach.me",
+      "url": "https://coach.me/",
+      "claim": "Coach.me combines habit tracking with human coaching, community encouragement, and reviews.",
+      "relevance": "An AI coach competes with trackers, community, and human coaches."
+    },
+    {
+      "source": "Habit Coach RAG paper",
+      "url": "https://arxiv.org/abs/2411.19229",
+      "claim": "A habit-coach chatbot study found procedural interaction design mattered more than static advice.",
+      "relevance": "The hard part is behavior design, not motivational text."
+    }
+  ],
+  "sampling_dimensions": [
+    "consumer archetype",
+    "pain frequency",
+    "willingness to pay",
+    "habit strength",
+    "trust/risk sensitivity",
+    "channel accessibility"
+  ],
+  "verdict_metrics": [
+    {
+      "name": "likely pull",
+      "score": 3,
+      "reason": "Side-project guilt is common, but many users churn from coaching apps"
+    },
+    {
+      "name": "urgency",
+      "score": 2,
+      "reason": "The pain is recurring, but rarely urgent enough to pay immediately"
+    },
+    {
+      "name": "willingness to pay",
+      "score": 2,
+      "reason": "Payment needs visible progress, stakes, or community"
+    },
+    {
+      "name": "trust barrier",
+      "score": 3,
+      "reason": "Users may like encouragement but doubt an AI can create accountability"
+    },
+    {
+      "name": "differentiation",
+      "score": 2,
+      "reason": "Habit trackers, body doubling, and human coaching already cover the job"
+    }
+  ],
+  "hard_nos": [
+    "If the product sends motivational check-ins, users will ignore it like any other notification.",
+    "If there is no external stake, it is weaker than Focusmate, stickK, or a friend.",
+    "If it asks users to plan too much, procrastinators will churn before the first win.",
+    "If it treats all side projects alike, advice will feel generic and low-trust."
+  ],
+  "objections_to_beat": [
+    "Prove users complete one visible project milestone within 7 days, not just open the app.",
+    "Add one accountability mechanism users cannot easily dismiss: public commitment, money stake, or booked session.",
+    "Narrow to one project type first, such as shipping a landing page or publishing a demo video.",
+    "Test whether users prefer AI nudges, human check-ins, or scheduled coworking before building a coach."
+  ],
+  "next_experiment": {
+    "action": "Run a 7-day SMS concierge with 15 side-project builders; each picks one deliverable, posts a public commitment, and receives daily yes/no progress checks plus one unblock prompt.",
+    "why": "This tests whether lightweight accountability changes behavior before building an AI coach.",
+    "success_signal": "At least 6 publish the deliverable, 8 reply on 5 or more days, and 3 offer to pay $10 for another week."
+  },
+  "personas": [
+    {
+      "id": "P01",
+      "label": "Daily blocked builder",
+      "dimensions": {
+        "consumer archetype": "overwhelmed user",
+        "pain frequency": "daily",
+        "willingness to pay": "medium",
+        "habit strength": "high",
+        "trust/risk sensitivity": "medium",
+        "channel accessibility": "high"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They want help but have trained themselves to ignore reminders.",
+      "what_would_change_their_mind": "A daily check-in tied to one tiny deliverable and visible streak loss."
+    },
+    {
+      "id": "P02",
+      "label": "Casual optimizer",
+      "dimensions": {
+        "consumer archetype": "curious user",
+        "pain frequency": "weekly",
+        "willingness to pay": "low",
+        "habit strength": "medium",
+        "trust/risk sensitivity": "low",
+        "channel accessibility": "high"
+      },
+      "verdict": "HARD_NO",
+      "objection": "They will try it once and move on.",
+      "what_would_change_their_mind": "A free challenge that creates peer pressure quickly."
+    },
+    {
+      "id": "P03",
+      "label": "Paid productivity buyer",
+      "dimensions": {
+        "consumer archetype": "productivity buyer",
+        "pain frequency": "daily",
+        "willingness to pay": "high",
+        "habit strength": "medium",
+        "trust/risk sensitivity": "medium",
+        "channel accessibility": "medium"
+      },
+      "verdict": "WOULD_PAY",
+      "objection": "They already buy tools, but expect a clear mechanism.",
+      "what_would_change_their_mind": "A 7-day outcome guarantee around one shipped artifact."
+    },
+    {
+      "id": "P04",
+      "label": "Privacy-sensitive skeptic",
+      "dimensions": {
+        "consumer archetype": "privacy-sensitive user",
+        "pain frequency": "occasional",
+        "willingness to pay": "low",
+        "habit strength": "high",
+        "trust/risk sensitivity": "high",
+        "channel accessibility": "low"
+      },
+      "verdict": "HARD_NO",
+      "objection": "They will not share unfinished personal work with an AI.",
+      "what_would_change_their_mind": "Local-only mode or human-free metadata tracking."
+    },
+    {
+      "id": "P05",
+      "label": "Aspirational creator",
+      "dimensions": {
+        "consumer archetype": "aspirational user",
+        "pain frequency": "weekly",
+        "willingness to pay": "medium",
+        "habit strength": "low",
+        "trust/risk sensitivity": "medium",
+        "channel accessibility": "high"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They like the identity more than the work.",
+      "what_would_change_their_mind": "A public micro-launch challenge that makes progress socially visible."
+    },
+    {
+      "id": "P06",
+      "label": "Budget-constrained student",
+      "dimensions": {
+        "consumer archetype": "student/early career",
+        "pain frequency": "daily",
+        "willingness to pay": "low",
+        "habit strength": "medium",
+        "trust/risk sensitivity": "medium",
+        "channel accessibility": "medium"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They need accountability but will not pay much.",
+      "what_would_change_their_mind": "A cohort or campus challenge with free entry and optional upgrade."
+    },
+    {
+      "id": "P07",
+      "label": "Habit-tool loyalist",
+      "dimensions": {
+        "consumer archetype": "existing-tool user",
+        "pain frequency": "daily",
+        "willingness to pay": "low",
+        "habit strength": "very-high",
+        "trust/risk sensitivity": "medium",
+        "channel accessibility": "low"
+      },
+      "verdict": "HARD_NO",
+      "objection": "They already have Todoist, Notion, streaks, or Focusmate.",
+      "what_would_change_their_mind": "An integration that uses their current task list and adds stakes."
+    },
+    {
+      "id": "P08",
+      "label": "Impulse trier",
+      "dimensions": {
+        "consumer archetype": "novelty seeker",
+        "pain frequency": "occasional",
+        "willingness to pay": "low",
+        "habit strength": "low",
+        "trust/risk sensitivity": "low",
+        "channel accessibility": "high"
+      },
+      "verdict": "HARD_NO",
+      "objection": "They create noisy signups and vanish before habit formation.",
+      "what_would_change_their_mind": "A one-hour challenge with immediate visible output."
+    },
+    {
+      "id": "P09",
+      "label": "High-stakes finisher",
+      "dimensions": {
+        "consumer archetype": "urgent personal need",
+        "pain frequency": "daily",
+        "willingness to pay": "high",
+        "habit strength": "medium",
+        "trust/risk sensitivity": "high",
+        "channel accessibility": "medium"
+      },
+      "verdict": "WOULD_PAY",
+      "objection": "They need to finish for a deadline, portfolio, or application.",
+      "what_would_change_their_mind": "Deadline mode with human backup and proof of completion."
+    },
+    {
+      "id": "P10",
+      "label": "Careful comparer",
+      "dimensions": {
+        "consumer archetype": "research-heavy buyer",
+        "pain frequency": "weekly",
+        "willingness to pay": "medium",
+        "habit strength": "medium",
+        "trust/risk sensitivity": "high",
+        "channel accessibility": "medium"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They will compare against coaching, Focusmate, and habit trackers.",
+      "what_would_change_their_mind": "Published completion rates from a focused cohort."
+    },
+    {
+      "id": "P11",
+      "label": "Community-led builder",
+      "dimensions": {
+        "consumer archetype": "peer-influenced user",
+        "pain frequency": "weekly",
+        "willingness to pay": "medium",
+        "habit strength": "medium",
+        "trust/risk sensitivity": "medium",
+        "channel accessibility": "high"
+      },
+      "verdict": "WOULD_PAY",
+      "objection": "They respond to peer momentum more than private AI chat.",
+      "what_would_change_their_mind": "A cohort challenge where the AI organizes accountability between people."
+    },
+    {
+      "id": "P12",
+      "label": "Workaround user",
+      "dimensions": {
+        "consumer archetype": "workaround user",
+        "pain frequency": "occasional",
+        "willingness to pay": "very-low",
+        "habit strength": "high",
+        "trust/risk sensitivity": "medium",
+        "channel accessibility": "low"
+      },
+      "verdict": "HARD_NO",
+      "objection": "They prefer notes, calendars, or occasional guilt.",
+      "what_would_change_their_mind": "A pain spike they cannot solve with existing routines."
+    }
+  ]
+}

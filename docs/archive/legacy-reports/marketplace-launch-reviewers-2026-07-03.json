@@ -1,0 +1,276 @@
+{
+  "title": "Marketplace Matching Indie Founders With Launch Reviewers",
+  "slug": "marketplace-launch-reviewers",
+  "created_at": "2026-07-03",
+  "language": "en",
+  "idea_type": "marketplace/platform",
+  "grounding_mode": "web-grounded",
+  "input": {
+    "idea": "Marketplace matching indie founders with launch reviewers.",
+    "target_user": "Indie founders preparing launches and reviewers who can give useful launch feedback.",
+    "use_case": "Founders would use it before launch to get credible feedback on positioning, page, offer, and launch plan.",
+    "price": null,
+    "links": [],
+    "user_context": "User requested a marketplace/platform Persona run."
+  },
+  "evidence_packet": [
+    {
+      "source": "Product Hunt Launch Guide",
+      "url": "https://www.producthunt.com/launch",
+      "claim": "Product Hunt provides launch checklists and says makers should ask people to visit and comment, not directly upvote.",
+      "relevance": "Launch preparation has clear demand, but platform rules shape acceptable reviewer behavior."
+    },
+    {
+      "source": "Product Hunt",
+      "url": "https://www.producthunt.com/",
+      "claim": "Product Hunt is built around product listings, comments, votes, and discovery by makers and tech users.",
+      "relevance": "Feedback and visibility already happen in-market, reducing the need for a separate marketplace."
+    },
+    {
+      "source": "Landing Pages Explained",
+      "url": "https://www.landingpagesexplained.com",
+      "claim": "Expert explanations of SaaS and creator landing pages already exist as curated content.",
+      "relevance": "Review supply can be packaged as content or consulting without a marketplace."
+    },
+    {
+      "source": "WIRED on Product Hunt",
+      "url": "https://www.wired.com/story/product-hunt",
+      "claim": "Product Hunt became influential because makers, journalists, investors, and creators gather around launches.",
+      "relevance": "The strongest value may be network access, not reviewer matching alone."
+    }
+  ],
+  "sampling_dimensions": [
+    "supply-side motivation",
+    "demand-side urgency",
+    "liquidity difficulty",
+    "trust requirement",
+    "repeat-use likelihood",
+    "switching friction"
+  ],
+  "verdict_metrics": [
+    {
+      "name": "likely pull",
+      "score": 2,
+      "reason": "Founders want feedback, but marketplaces need trust and liquidity"
+    },
+    {
+      "name": "urgency",
+      "score": 3,
+      "reason": "Launch deadlines create a short buying window"
+    },
+    {
+      "name": "willingness to pay",
+      "score": 2,
+      "reason": "Payment depends on reviewer credibility and output quality"
+    },
+    {
+      "name": "trust barrier",
+      "score": 5,
+      "reason": "Bad reviewers waste scarce launch time"
+    },
+    {
+      "name": "differentiation",
+      "score": 2,
+      "reason": "Communities, consultants, and Product Hunt already absorb the job"
+    }
+  ],
+  "hard_nos": [
+    "If reviewer quality is uneven, founders will not risk launch timing on strangers.",
+    "If supply is unpaid or low-paid, good reviewers will churn or route buyers off-platform.",
+    "If reviews do not produce visible launch improvements, founders will treat it as nice-to-have feedback.",
+    "If the marketplace promises exposure, it may conflict with Product Hunt norms around direct upvote asks."
+  ],
+  "objections_to_beat": [
+    "Manually match 10 founders with 5 vetted reviewers and measure whether reviews change launch assets.",
+    "Define reviewer quality with public examples, launch experience, and founder ratings before opening supply.",
+    "Start with one packaged service, such as 48-hour landing-page plus launch-comment review, not an open marketplace.",
+    "Test whether founders pay for reviewer credibility, turnaround time, or distribution access."
+  ],
+  "next_experiment": {
+    "action": "Concierge-match 8 founders launching within 45 days with 4 handpicked reviewers; charge founders $49 for a 48-hour written review and pay reviewers $25.",
+    "why": "This tests both sides of liquidity, reviewer quality, and unit economics before building marketplace software.",
+    "success_signal": "At least 5 founders pay, 4 submit revised assets after review, and 3 reviewers accept a second paid assignment."
+  },
+  "personas": [
+    {
+      "id": "P01",
+      "label": "Urgent launch buyer",
+      "dimensions": {
+        "supply-side motivation": "medium",
+        "demand-side urgency": "high",
+        "liquidity difficulty": "medium",
+        "trust requirement": "high",
+        "repeat-use likelihood": "medium",
+        "switching friction": "medium"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They need fast feedback but fear wasting the launch window.",
+      "what_would_change_their_mind": "A vetted reviewer with examples and guaranteed 48-hour turnaround."
+    },
+    {
+      "id": "P02",
+      "label": "Opportunistic reviewer",
+      "dimensions": {
+        "supply-side motivation": "high",
+        "demand-side urgency": "medium",
+        "liquidity difficulty": "high",
+        "trust requirement": "medium",
+        "repeat-use likelihood": "low",
+        "switching friction": "low"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They may join for leads, then move clients off-platform.",
+      "what_would_change_their_mind": "Enough paid volume and clear rules around off-platform work."
+    },
+    {
+      "id": "P03",
+      "label": "Trust-sensitive founder",
+      "dimensions": {
+        "supply-side motivation": "low",
+        "demand-side urgency": "medium",
+        "liquidity difficulty": "high",
+        "trust requirement": "very-high",
+        "repeat-use likelihood": "medium",
+        "switching friction": "high"
+      },
+      "verdict": "HARD_NO",
+      "objection": "A stranger review feels lower-trust than asking known founders.",
+      "what_would_change_their_mind": "Reviewer proof from people with relevant launch wins."
+    },
+    {
+      "id": "P04",
+      "label": "Repeat indie launcher",
+      "dimensions": {
+        "supply-side motivation": "medium",
+        "demand-side urgency": "high",
+        "liquidity difficulty": "medium",
+        "trust requirement": "high",
+        "repeat-use likelihood": "high",
+        "switching friction": "medium"
+      },
+      "verdict": "WOULD_PAY",
+      "objection": "They launch often and value faster critique loops.",
+      "what_would_change_their_mind": "A saved bench of reviewers who learn their product style."
+    },
+    {
+      "id": "P05",
+      "label": "Supply skeptic",
+      "dimensions": {
+        "supply-side motivation": "low",
+        "demand-side urgency": "medium",
+        "liquidity difficulty": "high",
+        "trust requirement": "medium",
+        "repeat-use likelihood": "low",
+        "switching friction": "medium"
+      },
+      "verdict": "HARD_NO",
+      "objection": "Good reviewers have better-paid consulting or audience channels.",
+      "what_would_change_their_mind": "A narrow paid package that makes reviewer time worth it."
+    },
+    {
+      "id": "P06",
+      "label": "Niche expert reviewer",
+      "dimensions": {
+        "supply-side motivation": "high",
+        "demand-side urgency": "low",
+        "liquidity difficulty": "high",
+        "trust requirement": "high",
+        "repeat-use likelihood": "medium",
+        "switching friction": "high"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They only want matches in their niche.",
+      "what_would_change_their_mind": "Category-specific matching and higher-priced expert reviews."
+    },
+    {
+      "id": "P07",
+      "label": "Marketplace power user",
+      "dimensions": {
+        "supply-side motivation": "medium",
+        "demand-side urgency": "high",
+        "liquidity difficulty": "low",
+        "trust requirement": "medium",
+        "repeat-use likelihood": "high",
+        "switching friction": "low"
+      },
+      "verdict": "WOULD_PAY",
+      "objection": "They already buy launch help and compare providers.",
+      "what_would_change_their_mind": "A fast queue, transparent ratings, and reusable reviewer relationships."
+    },
+    {
+      "id": "P08",
+      "label": "Cold-start casualty",
+      "dimensions": {
+        "supply-side motivation": "low",
+        "demand-side urgency": "low",
+        "liquidity difficulty": "very-high",
+        "trust requirement": "high",
+        "repeat-use likelihood": "low",
+        "switching friction": "high"
+      },
+      "verdict": "HARD_NO",
+      "objection": "Without dense supply and demand, the marketplace is empty at the wrong time.",
+      "what_would_change_their_mind": "Concierge matching that hides liquidity until demand repeats."
+    },
+    {
+      "id": "P09",
+      "label": "Price-shopping founder",
+      "dimensions": {
+        "supply-side motivation": "medium",
+        "demand-side urgency": "medium",
+        "liquidity difficulty": "medium",
+        "trust requirement": "medium",
+        "repeat-use likelihood": "medium",
+        "switching friction": "low"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They will compare against free communities and cheap consultants.",
+      "what_would_change_their_mind": "A low-cost fixed deliverable with better examples than free feedback."
+    },
+    {
+      "id": "P10",
+      "label": "High-risk launch",
+      "dimensions": {
+        "supply-side motivation": "medium",
+        "demand-side urgency": "high",
+        "liquidity difficulty": "high",
+        "trust requirement": "very-high",
+        "repeat-use likelihood": "medium",
+        "switching friction": "high"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They need confidentiality and domain knowledge.",
+      "what_would_change_their_mind": "NDA-ready reviewers with category expertise and private workflow."
+    },
+    {
+      "id": "P11",
+      "label": "Community insider",
+      "dimensions": {
+        "supply-side motivation": "high",
+        "demand-side urgency": "medium",
+        "liquidity difficulty": "low",
+        "trust requirement": "medium",
+        "repeat-use likelihood": "high",
+        "switching friction": "low"
+      },
+      "verdict": "HARD_NO",
+      "objection": "They already have founder friends and group chats.",
+      "what_would_change_their_mind": "Access to reviewers outside their current network with proven launch taste."
+    },
+    {
+      "id": "P12",
+      "label": "One-time launcher",
+      "dimensions": {
+        "supply-side motivation": "low",
+        "demand-side urgency": "high",
+        "liquidity difficulty": "medium",
+        "trust requirement": "high",
+        "repeat-use likelihood": "low",
+        "switching friction": "medium"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They may pay once, but retention is weak.",
+      "what_would_change_their_mind": "A one-shot package priced for acquisition, not long-term marketplace usage."
+    }
+  ]
+}

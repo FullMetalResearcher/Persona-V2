@@ -1,0 +1,276 @@
+{
+  "title": "AI Landing Page Critique Tool For Indie Founders",
+  "slug": "ai-landing-page-critique-tool",
+  "created_at": "2026-07-03",
+  "language": "en",
+  "idea_type": "B2B",
+  "grounding_mode": "web-grounded",
+  "input": {
+    "idea": "AI landing page critique tool for indie founders.",
+    "target_user": "Solo founders and indie builders preparing a launch page.",
+    "use_case": "They would use it before Product Hunt, X, Hacker News, or ad traffic to find why visitors will not convert.",
+    "price": null,
+    "links": [],
+    "user_context": "User requested a B2B Persona run."
+  },
+  "evidence_packet": [
+    {
+      "source": "Landing Pages Explained",
+      "url": "https://www.landingpagesexplained.com",
+      "claim": "There is existing interest in expert explanations of SaaS and indie-maker landing pages.",
+      "relevance": "Demand is adjacent, but expert-led critique already competes with generic AI feedback."
+    },
+    {
+      "source": "Product Hunt Launch Guide",
+      "url": "https://www.producthunt.com/launch",
+      "claim": "Product Hunt asks makers to prepare launch assets and seek comments rather than direct upvotes.",
+      "relevance": "Launch prep is a real moment, but the page critique must improve conversation, not just aesthetics."
+    },
+    {
+      "source": "Clearscope review, TechRadar",
+      "url": "https://www.techradar.com/pro/clearscope-review",
+      "claim": "Content optimization tools already sell grading, recommendations, and discoverability workflows.",
+      "relevance": "A paid critique tool needs a sharper wedge than another scorecard."
+    },
+    {
+      "source": "Product Hunt forum links",
+      "url": "https://www.producthunt.com/launch",
+      "claim": "Product Hunt surfaces community threads like landing-page critiques and tagline fixes.",
+      "relevance": "Founders seek critique, but often through community feedback that feels human and contextual."
+    }
+  ],
+  "sampling_dimensions": [
+    "company size",
+    "buyer role",
+    "budget authority",
+    "urgency",
+    "switching pain",
+    "trust/compliance barrier"
+  ],
+  "verdict_metrics": [
+    {
+      "name": "likely pull",
+      "score": 3,
+      "reason": "Launch pressure is real, but founders already ask peers or ChatGPT"
+    },
+    {
+      "name": "urgency",
+      "score": 3,
+      "reason": "Highest in the week before a public launch"
+    },
+    {
+      "name": "willingness to pay",
+      "score": 2,
+      "reason": "Indie founders are price-sensitive unless critique changes conversion"
+    },
+    {
+      "name": "trust barrier",
+      "score": 4,
+      "reason": "AI critique must prove it understands buyers, not just copy patterns"
+    },
+    {
+      "name": "differentiation",
+      "score": 2,
+      "reason": "Generic page graders and manual critiques are close substitutes"
+    }
+  ],
+  "hard_nos": [
+    "If it only returns copy tips, founders will use ChatGPT or a free community critique.",
+    "If it cannot show buyer-specific objections, the critique will feel like generic CRO advice.",
+    "If no before/after examples show better signups, payment will be hard to justify.",
+    "If it targets all founders, it will miss the urgent launch-week buyer."
+  ],
+  "objections_to_beat": [
+    "Show before/after rewrites for 5 indie launch pages and track whether founders ship the changes.",
+    "Prove one narrow promise: finding unclear positioning above the fold, not auditing the whole site.",
+    "Compare outputs against 3 human launch reviewers and show where AI catches missed objections.",
+    "Test a paid rush critique with founders launching within 14 days, not casual builders."
+  ],
+  "next_experiment": {
+    "action": "Recruit 10 indie founders with launch pages going live within 30 days; give each a one-page critique plus rewritten hero and ask for $25 after delivery.",
+    "why": "This tests urgency, trust, and willingness to pay without building a product.",
+    "success_signal": "At least 3 pay, 5 implement one recommended change, and 2 ask for a second pass."
+  },
+  "personas": [
+    {
+      "id": "P01",
+      "label": "Launch-week solo founder",
+      "dimensions": {
+        "company size": "solo",
+        "buyer role": "founder",
+        "budget authority": "high",
+        "urgency": "burning-now",
+        "switching pain": "low",
+        "trust/compliance barrier": "medium"
+      },
+      "verdict": "WOULD_PAY",
+      "objection": "They need fast outside eyes before traffic arrives.",
+      "what_would_change_their_mind": "A concrete rewrite of the hero with predicted objections and launch comments to use."
+    },
+    {
+      "id": "P02",
+      "label": "Weekend indie builder",
+      "dimensions": {
+        "company size": "solo",
+        "buyer role": "builder",
+        "budget authority": "medium",
+        "urgency": "active-pain",
+        "switching pain": "low",
+        "trust/compliance barrier": "low"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They want feedback but default to free peer channels.",
+      "what_would_change_their_mind": "A cheap single-page sample that feels more specific than Discord feedback."
+    },
+    {
+      "id": "P03",
+      "label": "Early startup marketer",
+      "dimensions": {
+        "company size": "2-20",
+        "buyer role": "marketing",
+        "budget authority": "medium",
+        "urgency": "active-pain",
+        "switching pain": "medium",
+        "trust/compliance barrier": "medium"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They already have analytics and messaging docs.",
+      "what_would_change_their_mind": "Evidence that critique maps to signup or demo conversion, not taste."
+    },
+    {
+      "id": "P04",
+      "label": "Micro-agency owner",
+      "dimensions": {
+        "company size": "2-20",
+        "buyer role": "owner",
+        "budget authority": "high",
+        "urgency": "considering",
+        "switching pain": "medium",
+        "trust/compliance barrier": "high"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They cannot hand clients an untrusted AI critique.",
+      "what_would_change_their_mind": "White-label examples with clear rationale and low hallucination risk."
+    },
+    {
+      "id": "P05",
+      "label": "Product lead",
+      "dimensions": {
+        "company size": "20-100",
+        "buyer role": "product",
+        "budget authority": "medium",
+        "urgency": "considering",
+        "switching pain": "medium",
+        "trust/compliance barrier": "high"
+      },
+      "verdict": "HARD_NO",
+      "objection": "Landing copy is not their current bottleneck.",
+      "what_would_change_their_mind": "A workflow tied to experiment backlog and observed user objections."
+    },
+    {
+      "id": "P06",
+      "label": "Growth lead before campaign",
+      "dimensions": {
+        "company size": "20-100",
+        "buyer role": "growth",
+        "budget authority": "high",
+        "urgency": "burning-now",
+        "switching pain": "high",
+        "trust/compliance barrier": "medium"
+      },
+      "verdict": "NEEDS_PROOF",
+      "objection": "They need measurable lift, not another recommendation list.",
+      "what_would_change_their_mind": "A fast test that proposes variants ready for paid traffic."
+    },
+    {
+      "id": "P07",
+      "label": "Sales-led founder",
+      "dimensions": {
+        "company size": "2-20",
+        "buyer role": "founder",
+        "budget authority": "high",
+        "urgency": "active-pain",
+        "switching pain": "medium",
+        "trust/compliance barrier": "medium"
+      },
+      "verdict": "WOULD_PAY",
+      "objection": "They know prospects object, but the page hides those answers.",
+      "what_would_change_their_mind": "Critique based on sales-call objections translated into page sections."
+    },
+    {
+      "id": "P08",
+      "label": "Skeptical developer-founder",
+      "dimensions": {
+        "company size": "solo",
+        "buyer role": "developer",
+        "budget authority": "low",
+        "urgency": "vague-curiosity",
+        "switching pain": "low",
+        "trust/compliance barrier": "high"
+      },
+      "verdict": "HARD_NO",
+      "objection": "They distrust marketing advice and can prompt an LLM themselves.",
+      "what_would_change_their_mind": "A public teardown where the advice is obviously non-obvious."
+    },
+    {
+      "id": "P09",
+      "label": "Operations lead",
+      "dimensions": {
+        "company size": "100-500",
+        "buyer role": "operations",
+        "budget authority": "medium",
+        "urgency": "considering",
+        "switching pain": "high",
+        "trust/compliance barrier": "high"
+      },
+      "verdict": "HARD_NO",
+      "objection": "Landing-page critique is outside their job.",
+      "what_would_change_their_mind": "A use case tied to internal rollout or vendor evaluation pages."
+    },
+    {
+      "id": "P10",
+      "label": "Finance-aware buyer",
+      "dimensions": {
+        "company size": "20-100",
+        "buyer role": "finance",
+        "budget authority": "high",
+        "urgency": "considering",
+        "switching pain": "high",
+        "trust/compliance barrier": "high"
+      },
+      "verdict": "HARD_NO",
+      "objection": "They will not fund soft conversion advice without a revenue path.",
+      "what_would_change_their_mind": "A clear link to campaign spend recovery or demo rate improvement."
+    },
+    {
+      "id": "P11",
+      "label": "Indie consultant",
+      "dimensions": {
+        "company size": "solo",
+        "buyer role": "consultant",
+        "budget authority": "high",
+        "urgency": "active-pain",
+        "switching pain": "low",
+        "trust/compliance barrier": "medium"
+      },
+      "verdict": "WOULD_PAY",
+      "objection": "They can resell sharper critiques to clients.",
+      "what_would_change_their_mind": "Reusable report format with client-ready language and examples."
+    },
+    {
+      "id": "P12",
+      "label": "Enterprise evaluator",
+      "dimensions": {
+        "company size": "500+",
+        "buyer role": "evaluator",
+        "budget authority": "low",
+        "urgency": "vague-curiosity",
+        "switching pain": "high",
+        "trust/compliance barrier": "very-high"
+      },
+      "verdict": "HARD_NO",
+      "objection": "Procurement and brand review make a lightweight AI tool irrelevant.",
+      "what_would_change_their_mind": "A compliance-safe enterprise content workflow, which is a different product."
+    }
+  ]
+}
