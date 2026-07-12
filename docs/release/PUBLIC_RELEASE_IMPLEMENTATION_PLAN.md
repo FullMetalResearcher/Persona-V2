@@ -312,7 +312,7 @@ python3 "$HOME/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py" 
 
 Acceptance gate:
 
-- [ ] CI passes from a clean checkout.
+- [x] CI passes from a clean checkout.
 - [x] Official skill validation passes.
 - [x] Official plugin validation passes.
 - [x] README prerequisites and commands match the tested environment.
@@ -321,12 +321,12 @@ Acceptance gate:
 
 ### 5.1 Create reviewable commits
 
-- [ ] Create a release branch such as `release/v0.1.0`.
-- [ ] Review every addition, modification, move, and deletion.
-- [ ] Confirm obsolete root-level runtime sources are intentionally removed.
-- [ ] Stage explicit paths rather than using `git add -A`.
-- [ ] Exclude `.agents/skills/`, `.DS_Store`, and generated reports.
-- [ ] Prefer logical commits:
+- [x] Create a release branch such as `release/v0.1.0`.
+- [x] Review every addition, modification, move, and deletion.
+- [x] Confirm obsolete root-level runtime sources are intentionally removed.
+- [x] Stage explicit paths rather than using `git add -A`.
+- [x] Exclude `.agents/skills/`, `.DS_Store`, and generated reports.
+- [x] Prefer logical commits:
   1. security and validator corrections
   2. plugin migration and obsolete-source removal
   3. documentation, examples, and privacy cleanup
@@ -418,17 +418,17 @@ Acceptance gate:
 
 Persona is ready to share publicly only when all statements below are true:
 
-- [ ] No unresolved critical security or validator finding remains.
-- [ ] Renderer output is safe for untrusted model/user strings and URLs.
-- [ ] The checker enforces the bundled JSON contract.
-- [ ] The worktree and index are clean.
-- [ ] CI passes from a clean checkout.
-- [ ] Official skill and plugin validators pass.
-- [ ] All six decision-quality evaluation reports pass.
-- [ ] Equivalent framings produce stable decisions.
+- [x] No unresolved critical security or validator finding remains.
+- [x] Renderer output is safe for untrusted model/user strings and URLs.
+- [x] The checker enforces the bundled JSON contract.
+- [x] The worktree and index are clean.
+- [x] CI passes from a clean checkout.
+- [x] Official skill and plugin validators pass.
+- [x] All six decision-quality evaluation reports pass.
+- [x] Equivalent framings produce stable decisions.
 - [ ] Remote install, fresh invocation, output placement, and update are proven.
-- [ ] Public identity exposure is intentional.
-- [ ] Gitleaks reports no secrets in release history or content.
+- [x] Public identity exposure is intentional.
+- [x] Gitleaks reports no secrets in release history or content.
 - [ ] GitHub metadata and feedback routing are complete.
 - [ ] Anonymous clone and installation succeed.
 
