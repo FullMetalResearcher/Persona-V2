@@ -175,6 +175,10 @@ test("rejects invalid sampling coordinates and dimension values", async () => {
 test("rejects invalid dates and verdict-confidence combinations", async () => {
   const golden = await loadGoldenReport();
 
+  const invalidLanguage = clone(golden);
+  invalidLanguage.language = "e";
+  assertInvalid(invalidLanguage, /language must be a string with at least 2 characters/);
+
   const invalidDate = clone(golden);
   invalidDate.created_at = "2026-02-30";
   assertInvalid(invalidDate, /real calendar date/);

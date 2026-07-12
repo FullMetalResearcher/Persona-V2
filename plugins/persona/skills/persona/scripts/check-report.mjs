@@ -187,7 +187,9 @@ export function validateReportObject(report) {
   if (!nonEmptyString(report.title)) errors.push("title must be a non-empty string");
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(report.slug || "")) errors.push("slug must use lowercase English slug format");
   if (!validateCalendarDate(report.created_at)) errors.push("created_at must be a real calendar date in YYYY-MM-DD format");
-  if (!nonEmptyString(report.language)) errors.push("language must be a non-empty string");
+  if (typeof report.language !== "string" || report.language.length < 2) {
+    errors.push("language must be a string with at least 2 characters");
+  }
   if (!IDEA_TYPES.includes(report.idea_type)) errors.push(`idea_type must be one of: ${IDEA_TYPES.join(", ")}`);
   if (!GROUNDING_MODES.includes(report.grounding_mode)) errors.push(`grounding_mode must be one of: ${GROUNDING_MODES.join(", ")}`);
   if (!nonEmptyString(report.normalized_idea)) errors.push("normalized_idea must be a non-empty string");
