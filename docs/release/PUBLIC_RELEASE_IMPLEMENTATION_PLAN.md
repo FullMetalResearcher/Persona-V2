@@ -164,7 +164,7 @@ If the existing email must be removed:
 - [x] Make a separate backup or clone.
 - [x] Rewrite the author and committer email in an isolated clone.
 - [x] Verify every rewritten commit and tag.
-- [ ] Request explicit approval before force-pushing the private repository.
+- [x] Request explicit approval before force-pushing the private repository.
 
 ### 2.2 Sanitize publishable content
 
@@ -289,7 +289,7 @@ Tasks:
 - [x] State that a working `node` executable is required.
 - [x] Keep the shortest verified marketplace install flow prominent.
 - [x] Keep update instructions aligned with the tested CLI flow.
-- [ ] Confirm the golden report and sample-input links resolve on GitHub.
+- [x] Confirm the golden report and sample-input links resolve on GitHub.
 - [x] Confirm the feedback route asks the three approved questions.
 - [x] Avoid unverified claims about market validation, prediction, or outcomes.
 
@@ -331,34 +331,34 @@ Acceptance gate:
   2. plugin migration and obsolete-source removal
   3. documentation, examples, and privacy cleanup
   4. CI and release metadata
-- [ ] Run a pre-landing review against `origin/main`.
+- [x] Run a pre-landing review against `origin/main`.
 
 ### 5.2 Test installation from the private GitHub remote
 
 Use fresh temporary directories for `CODEX_HOME` and the caller repository.
 
-- [ ] Add `FullMetalResearcher/Persona-V2` as a Git marketplace.
-- [ ] Confirm the marketplace exposes `persona@persona` version `0.1.0`.
-- [ ] Install Persona into the temporary `CODEX_HOME`.
-- [ ] Start a fresh Codex task in the separate caller repository.
-- [ ] Invoke Persona with a non-golden input.
-- [ ] Confirm bundled schema and scripts resolve from the installed cache.
-- [ ] Confirm reports are written to the caller repository, not the plugin
+- [x] Add `FullMetalResearcher/Persona-V2` as a Git marketplace.
+- [x] Confirm the marketplace exposes `persona@persona` version `0.1.0`.
+- [x] Install Persona into the temporary `CODEX_HOME`.
+- [x] Start a fresh Codex task in the separate caller repository.
+- [x] Invoke Persona with a non-golden input.
+- [x] Confirm bundled schema and scripts resolve from the installed cache.
+- [x] Confirm reports are written to the caller repository, not the plugin
       source or cache.
-- [ ] Validate the generated JSON/HTML pair.
-- [ ] Test marketplace upgrade after a private version change or controlled
+- [x] Validate the generated JSON/HTML pair.
+- [x] Test marketplace upgrade after a private version change or controlled
       cache-buster.
-- [ ] Confirm a new task sees the updated plugin.
+- [x] Confirm a new task sees the updated plugin.
 
 Acceptance gate:
 
-- [ ] Release-branch CI passes.
-- [ ] Private remote marketplace addition succeeds.
-- [ ] Private remote plugin installation succeeds.
-- [ ] Fresh-task invocation succeeds.
-- [ ] Output lands in the caller repository.
-- [ ] Upgrade succeeds and exposes the updated version.
-- [ ] `git status --short` is empty after all intended commits.
+- [x] Release-branch CI passes.
+- [x] Private remote marketplace addition succeeds.
+- [x] Private remote plugin installation succeeds.
+- [x] Fresh-task invocation succeeds.
+- [x] Output lands in the caller repository.
+- [x] Upgrade succeeds and exposes the updated version.
+- [x] `git status --short` is empty after all intended commits.
 
 ## Phase 6: Publish and Verify
 
@@ -426,7 +426,7 @@ Persona is ready to share publicly only when all statements below are true:
 - [x] Official skill and plugin validators pass.
 - [x] All six decision-quality evaluation reports pass.
 - [x] Equivalent framings produce stable decisions.
-- [ ] Remote install, fresh invocation, output placement, and update are proven.
+- [x] Remote install, fresh invocation, output placement, and update are proven.
 - [x] Public identity exposure is intentional.
 - [x] Gitleaks reports no secrets in release history or content.
 - [ ] GitHub metadata and feedback routing are complete.
