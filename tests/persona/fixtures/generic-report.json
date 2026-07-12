@@ -1,0 +1,566 @@
+{
+  "title": "Persona Decision Report: Self-Serve Failed-Payment Exception Reports",
+  "slug": "failed-payment-exception-reports",
+  "created_at": "2026-07-12",
+  "language": "en",
+  "idea_type": "B2B",
+  "grounding_mode": "user-provided",
+  "input": {
+    "idea": "A narrow self-serve tool for three small SaaS founders who each pay EUR 250 per month for a manually produced failed-payment exception report, send the same Stripe CSV every Monday, and have asked for a faster self-serve version.",
+    "target_user": "One of three small SaaS founders already paying for the weekly manual report",
+    "use_case": "Upload the standard Stripe export during Monday finance review and receive the same failed-payment exception report in five minutes",
+    "current_alternative": "Send a CSV to the founder-operator and wait for the manually reconciled exception report",
+    "price": "EUR 250 per month for the existing manual service",
+    "links": [],
+    "user_evidence": "Three founders pay EUR 250 monthly, send the same Stripe CSV every Monday, and have asked for self-serve access because the manual report arrives too slowly."
+  },
+  "normalized_idea": "Convert an existing paid weekly service into a narrow self-serve importer that accepts the same Stripe export and reproduces the same exception report faster for the current three customers.",
+  "evidence": [
+    {
+      "id": "E01",
+      "source": "Founder-supplied paying-customer behavior",
+      "url": "",
+      "observation": "Three small SaaS founders each currently pay EUR 250 per month for the manually produced report.",
+      "type": "user-provided",
+      "strength": "strong",
+      "implication": "The first users, budget, and existing paid behavior are already observable."
+    },
+    {
+      "id": "E02",
+      "source": "Founder-supplied recurring workflow",
+      "url": "",
+      "observation": "Each customer sends the same Stripe CSV every Monday and waits for reconciliation.",
+      "type": "current-behavior",
+      "strength": "strong",
+      "implication": "The job repeats on a stable cadence with a known input and output."
+    },
+    {
+      "id": "E03",
+      "source": "Founder-supplied product request",
+      "url": "",
+      "observation": "All three paying founders asked for self-serve access because the manual report arrives too slowly.",
+      "type": "buyer-language",
+      "strength": "strong",
+      "implication": "The requested wedge addresses a stated latency problem rather than an invented adjacent feature."
+    },
+    {
+      "id": "E04",
+      "source": "Founder-supplied wedge constraint",
+      "url": "",
+      "observation": "The proposed first version imports the same export and returns the same exception report rather than replacing subscription finance operations.",
+      "type": "user-provided",
+      "strength": "strong",
+      "implication": "A narrow first build can be compared directly against the paid manual baseline."
+    }
+  ],
+  "adversarial_dimensions": [
+    {
+      "name": "monthly failed-payment volume",
+      "rationale": "Volume determines whether five-minute self-service materially changes the weekly finance workload.",
+      "buckets": [
+        "under 25",
+        "25-100",
+        "101-500",
+        "500+"
+      ]
+    },
+    {
+      "name": "exception complexity",
+      "rationale": "Simple status grouping and account-specific judgment require different automation boundaries.",
+      "buckets": [
+        "status grouping",
+        "known rule exceptions",
+        "account context needed",
+        "manual judgment needed"
+      ]
+    },
+    {
+      "name": "finance review cadence",
+      "rationale": "The value of faster output rises when the report drives a fixed operating review.",
+      "buckets": [
+        "ad hoc",
+        "monthly",
+        "weekly",
+        "daily"
+      ]
+    },
+    {
+      "name": "Stripe export consistency",
+      "rationale": "Input drift determines whether a narrow importer remains reliable without service work.",
+      "buckets": [
+        "stable standard export",
+        "minor column drift",
+        "multiple Stripe accounts",
+        "custom enrichment required"
+      ]
+    },
+    {
+      "name": "recovery urgency",
+      "rationale": "Time-sensitive recovery actions determine the cost of waiting for a manual report.",
+      "buckets": [
+        "informational",
+        "this-week follow-up",
+        "same-day intervention",
+        "cash runway risk"
+      ]
+    },
+    {
+      "name": "pilot authority",
+      "rationale": "The existing buyer's ability to accept the output and continue paying controls rollout speed.",
+      "buckets": [
+        "analyst only",
+        "founder reviews",
+        "founder approves workflow",
+        "founder controls budget and rollout"
+      ]
+    }
+  ],
+  "sampling_method": "halton",
+  "adversarial_positions": [
+    {
+      "id": "A01",
+      "dimension_values": {
+        "monthly failed-payment volume": "101-500",
+        "exception complexity": "known rule exceptions",
+        "finance review cadence": "ad hoc",
+        "Stripe export consistency": "stable standard export",
+        "recovery urgency": "informational",
+        "pilot authority": "analyst only"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.5,
+        "exception complexity": 0.333333,
+        "finance review cadence": 0.2,
+        "Stripe export consistency": 0.142857,
+        "recovery urgency": 0.090909,
+        "pilot authority": 0.076923
+      },
+      "label": "Low-volume ad hoc reviewer",
+      "stance": "conditional",
+      "objection": "Low failure volume and ad hoc review may not justify a product even though the current service is paid.",
+      "proof_trigger": "The customer still chooses self-serve in four consecutive weeks and continues paying the existing price.",
+      "evidence_ids": [
+        "E01",
+        "E03"
+      ]
+    },
+    {
+      "id": "A02",
+      "dimension_values": {
+        "monthly failed-payment volume": "25-100",
+        "exception complexity": "account context needed",
+        "finance review cadence": "monthly",
+        "Stripe export consistency": "minor column drift",
+        "recovery urgency": "informational",
+        "pilot authority": "analyst only"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.25,
+        "exception complexity": 0.666667,
+        "finance review cadence": 0.4,
+        "Stripe export consistency": 0.285714,
+        "recovery urgency": 0.181818,
+        "pilot authority": 0.153846
+      },
+      "label": "Weekly rules-based operator",
+      "stance": "support",
+      "objection": "The workflow fits, but rule exceptions must match the manual report without founder intervention.",
+      "proof_trigger": "Four weekly diffs reach at least 95% classification agreement.",
+      "evidence_ids": [
+        "E02",
+        "E04"
+      ]
+    },
+    {
+      "id": "A03",
+      "dimension_values": {
+        "monthly failed-payment volume": "500+",
+        "exception complexity": "status grouping",
+        "finance review cadence": "weekly",
+        "Stripe export consistency": "minor column drift",
+        "recovery urgency": "this-week follow-up",
+        "pilot authority": "analyst only"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.75,
+        "exception complexity": 0.111111,
+        "finance review cadence": 0.6,
+        "Stripe export consistency": 0.428571,
+        "recovery urgency": 0.272727,
+        "pilot authority": 0.230769
+      },
+      "label": "Context-heavy monthly account",
+      "stance": "conditional",
+      "objection": "Account context absent from the export could make a monthly user wait for manual review anyway.",
+      "proof_trigger": "Every required context field is either in the export or surfaced as an explicit review item.",
+      "evidence_ids": [
+        "E02",
+        "E04"
+      ]
+    },
+    {
+      "id": "A04",
+      "dimension_values": {
+        "monthly failed-payment volume": "under 25",
+        "exception complexity": "known rule exceptions",
+        "finance review cadence": "daily",
+        "Stripe export consistency": "multiple Stripe accounts",
+        "recovery urgency": "this-week follow-up",
+        "pilot authority": "founder reviews"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.125,
+        "exception complexity": 0.444444,
+        "finance review cadence": 0.8,
+        "Stripe export consistency": 0.571429,
+        "recovery urgency": 0.363636,
+        "pilot authority": 0.307692
+      },
+      "label": "Multi-account founder with input drift",
+      "stance": "conditional",
+      "objection": "Multiple Stripe accounts can turn the importer into weekly normalization work.",
+      "proof_trigger": "The first supported account shape completes four runs with no manual column repair.",
+      "evidence_ids": [
+        "E02"
+      ]
+    },
+    {
+      "id": "A05",
+      "dimension_values": {
+        "monthly failed-payment volume": "101-500",
+        "exception complexity": "manual judgment needed",
+        "finance review cadence": "ad hoc",
+        "Stripe export consistency": "multiple Stripe accounts",
+        "recovery urgency": "this-week follow-up",
+        "pilot authority": "founder reviews"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.625,
+        "exception complexity": 0.777778,
+        "finance review cadence": 0.04,
+        "Stripe export consistency": 0.714286,
+        "recovery urgency": 0.454545,
+        "pilot authority": 0.384615
+      },
+      "label": "High-volume same-day recovery",
+      "stance": "support",
+      "objection": "High urgency makes speed valuable, but one wrong grouping can trigger incorrect recovery action at scale.",
+      "proof_trigger": "The founder signs off on every action category after a parallel run.",
+      "evidence_ids": [
+        "E02",
+        "E03"
+      ]
+    },
+    {
+      "id": "A06",
+      "dimension_values": {
+        "monthly failed-payment volume": "25-100",
+        "exception complexity": "status grouping",
+        "finance review cadence": "ad hoc",
+        "Stripe export consistency": "custom enrichment required",
+        "recovery urgency": "same-day intervention",
+        "pilot authority": "founder reviews"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.375,
+        "exception complexity": 0.222222,
+        "finance review cadence": 0.24,
+        "Stripe export consistency": 0.857143,
+        "recovery urgency": 0.545455,
+        "pilot authority": 0.461538
+      },
+      "label": "Judgment-heavy analyst",
+      "stance": "reject",
+      "objection": "If most exceptions need manual judgment, self-service only moves the waiting point into an unresolved queue.",
+      "proof_trigger": "Fewer than 10% of exceptions require context outside the export.",
+      "evidence_ids": [
+        "E04"
+      ]
+    },
+    {
+      "id": "A07",
+      "dimension_values": {
+        "monthly failed-payment volume": "500+",
+        "exception complexity": "account context needed",
+        "finance review cadence": "monthly",
+        "Stripe export consistency": "stable standard export",
+        "recovery urgency": "same-day intervention",
+        "pilot authority": "founder approves workflow"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.875,
+        "exception complexity": 0.555556,
+        "finance review cadence": 0.44,
+        "Stripe export consistency": 0.020408,
+        "recovery urgency": 0.636364,
+        "pilot authority": 0.538462
+      },
+      "label": "Stable export with limited authority",
+      "stance": "conditional",
+      "objection": "A clean import is insufficient if the operator cannot approve use of the generated recovery list.",
+      "proof_trigger": "The budget owner reviews the parallel output and authorizes the weekly workflow.",
+      "evidence_ids": [
+        "E01",
+        "E02"
+      ]
+    },
+    {
+      "id": "A08",
+      "dimension_values": {
+        "monthly failed-payment volume": "under 25",
+        "exception complexity": "manual judgment needed",
+        "finance review cadence": "weekly",
+        "Stripe export consistency": "stable standard export",
+        "recovery urgency": "same-day intervention",
+        "pilot authority": "founder approves workflow"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.0625,
+        "exception complexity": 0.888889,
+        "finance review cadence": 0.64,
+        "Stripe export consistency": 0.163265,
+        "recovery urgency": 0.727273,
+        "pilot authority": 0.615385
+      },
+      "label": "Daily finance operator",
+      "stance": "support",
+      "objection": "Daily cadence strengthens value, but it could pull the product toward live integrations before the CSV wedge is proven.",
+      "proof_trigger": "The customer accepts scheduled CSV use for the pilot without requesting OAuth.",
+      "evidence_ids": [
+        "E03",
+        "E04"
+      ]
+    },
+    {
+      "id": "A09",
+      "dimension_values": {
+        "monthly failed-payment volume": "101-500",
+        "exception complexity": "status grouping",
+        "finance review cadence": "daily",
+        "Stripe export consistency": "minor column drift",
+        "recovery urgency": "cash runway risk",
+        "pilot authority": "founder approves workflow"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.5625,
+        "exception complexity": 0.037037,
+        "finance review cadence": 0.84,
+        "Stripe export consistency": 0.306122,
+        "recovery urgency": 0.818182,
+        "pilot authority": 0.692308
+      },
+      "label": "Cash-risk account needing context",
+      "stance": "conditional",
+      "objection": "Cash urgency raises value and the cost of a wrong exception classification simultaneously.",
+      "proof_trigger": "Parallel reports agree on high-value accounts and the founder approves escalation rules.",
+      "evidence_ids": [
+        "E02",
+        "E04"
+      ]
+    },
+    {
+      "id": "A10",
+      "dimension_values": {
+        "monthly failed-payment volume": "25-100",
+        "exception complexity": "known rule exceptions",
+        "finance review cadence": "ad hoc",
+        "Stripe export consistency": "minor column drift",
+        "recovery urgency": "cash runway risk",
+        "pilot authority": "founder controls budget and rollout"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.3125,
+        "exception complexity": 0.37037,
+        "finance review cadence": 0.08,
+        "Stripe export consistency": 0.44898,
+        "recovery urgency": 0.909091,
+        "pilot authority": 0.769231
+      },
+      "label": "Custom-enrichment workflow",
+      "stance": "reject",
+      "objection": "A customer-specific enrichment step would recreate the manual service and break the five-minute promise.",
+      "proof_trigger": "The supported export alone produces the accepted report or explicitly rejects the case.",
+      "evidence_ids": [
+        "E02",
+        "E04"
+      ]
+    },
+    {
+      "id": "A11",
+      "dimension_values": {
+        "monthly failed-payment volume": "500+",
+        "exception complexity": "account context needed",
+        "finance review cadence": "monthly",
+        "Stripe export consistency": "multiple Stripe accounts",
+        "recovery urgency": "informational",
+        "pilot authority": "founder controls budget and rollout"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.8125,
+        "exception complexity": 0.703704,
+        "finance review cadence": 0.28,
+        "Stripe export consistency": 0.591837,
+        "recovery urgency": 0.008264,
+        "pilot authority": 0.846154
+      },
+      "label": "Founder-controlled weekly rollout",
+      "stance": "support",
+      "objection": "The buyer, cadence, and paid baseline align, but continued payment after automation remains unproven.",
+      "proof_trigger": "The founder runs four cycles unassisted and renews at EUR 250.",
+      "evidence_ids": [
+        "E01",
+        "E03"
+      ]
+    },
+    {
+      "id": "A12",
+      "dimension_values": {
+        "monthly failed-payment volume": "under 25",
+        "exception complexity": "status grouping",
+        "finance review cadence": "monthly",
+        "Stripe export consistency": "multiple Stripe accounts",
+        "recovery urgency": "informational",
+        "pilot authority": "founder controls budget and rollout"
+      },
+      "sampling_coordinates": {
+        "monthly failed-payment volume": 0.1875,
+        "exception complexity": 0.148148,
+        "finance review cadence": 0.48,
+        "Stripe export consistency": 0.734694,
+        "recovery urgency": 0.099174,
+        "pilot authority": 0.923077
+      },
+      "label": "Suite-expansion request",
+      "stance": "conditional",
+      "objection": "Requests beyond the exception report can distract from the paid workflow the evidence actually supports.",
+      "proof_trigger": "The customer adopts the narrow report before any adjacent feature is scheduled.",
+      "evidence_ids": [
+        "E03",
+        "E04"
+      ]
+    }
+  ],
+  "decision_factors": [
+    {
+      "name": "Reachable first users",
+      "status": "supported",
+      "reason": "The first users are the three current paying customers, not a hypothetical segment.",
+      "evidence_ids": [
+        "E01"
+      ]
+    },
+    {
+      "name": "Repeated costly behavior",
+      "status": "supported",
+      "reason": "The same export and reconciliation job recur every Monday and currently require paid manual work.",
+      "evidence_ids": [
+        "E01",
+        "E02"
+      ]
+    },
+    {
+      "name": "Credible switching reason",
+      "status": "supported",
+      "reason": "Customers explicitly asked to remove the manual waiting time while preserving the known report.",
+      "evidence_ids": [
+        "E03"
+      ]
+    },
+    {
+      "name": "Narrow verifiable wedge",
+      "status": "supported",
+      "reason": "The first build has a stable input and can be diffed against an accepted manual output.",
+      "evidence_ids": [
+        "E02",
+        "E04"
+      ]
+    },
+    {
+      "name": "Accuracy without hidden service work",
+      "status": "uncertain",
+      "reason": "The supplied evidence does not yet show how much account context and judgment the manual reconciliation embeds.",
+      "evidence_ids": [
+        "E04"
+      ]
+    }
+  ],
+  "hard_nos": [
+    {
+      "title": "Hidden manual judgment could make the importer dishonest",
+      "objection": "If the accepted report depends on account history or founder judgment absent from the CSV, a fast upload flow will silently produce a worse product.",
+      "why_it_matters": "The wedge is valuable only if it preserves the trusted exceptions, not merely the report format.",
+      "evidence_ids": [
+        "E02",
+        "E04"
+      ],
+      "position_ids": [
+        "A03",
+        "A06",
+        "A09"
+      ],
+      "severity": "major",
+      "response": "Diff every generated line against four weeks of manual reports and expose any rule that still requires review."
+    },
+    {
+      "title": "Input drift can recreate the service business",
+      "objection": "Multiple accounts, renamed columns, or custom enrichment can turn each upload into founder-operated cleanup.",
+      "why_it_matters": "A self-serve product that needs weekly repair has not removed delivery latency or labor.",
+      "evidence_ids": [
+        "E02"
+      ],
+      "position_ids": [
+        "A04",
+        "A07",
+        "A10"
+      ],
+      "severity": "manageable",
+      "response": "Support only the exact export used by the first pilot and reject unsupported shapes explicitly."
+    },
+    {
+      "title": "Adjacent finance features can erase the proven wedge",
+      "objection": "Expanding into dunning, messaging, forecasting, or multi-processor reconciliation before matching the paid report replaces direct demand with roadmap speculation.",
+      "why_it_matters": "The evidence supports one report and one latency improvement, not a revenue-operations suite.",
+      "evidence_ids": [
+        "E03",
+        "E04"
+      ],
+      "position_ids": [
+        "A01",
+        "A05",
+        "A08",
+        "A11",
+        "A12"
+      ],
+      "severity": "manageable",
+      "response": "Freeze scope until one customer runs the importer unassisted for four weekly cycles and keeps paying."
+    }
+  ],
+  "recommendation": {
+    "verdict": "Build",
+    "confidence": "medium",
+    "decisive_reason": "Three reachable customers already pay for the repeated workflow and have requested the exact latency-reducing self-serve wedge proposed for the first build.",
+    "evidence_limits": [
+      "The behavior and requests are founder-supplied and have not been independently reviewed.",
+      "No automated output has yet been compared line by line with the accepted manual report.",
+      "Retention after replacing the founder's service labor is unproven."
+    ],
+    "reversal_evidence": [
+      "Historical report diffs show that the CSV lacks critical context for most exceptions.",
+      "The first paying founder refuses to use the importer without broad adjacent finance features.",
+      "A four-week pilot requires recurring manual cleanup or produces materially different recovery actions."
+    ]
+  },
+  "mistakes_to_avoid": [
+    "Do not add live Stripe OAuth before the existing CSV import proves the output.",
+    "Do not hide unsupported exceptions; route them visibly to manual review.",
+    "Do not replace the paid service for all three customers at once.",
+    "Do not measure success by uploads when the accepted baseline is report accuracy, turnaround, and continued payment.",
+    "Do not broaden beyond failed-payment exceptions during the four-week pilot."
+  ],
+  "next_action": {
+    "action": "Build the CSV-to-exception-report path for one paying founder and run it beside the manual report for the next four Mondays.",
+    "why_now": "The comparison tests the only material unknown: whether the known input contains enough information to reproduce the trusted output without hidden service work.",
+    "success_threshold": "For four consecutive weeks, the founder completes the upload unassisted, receives the report within five minutes, at least 95% of exception classifications match the accepted manual report, and the EUR 250 monthly payment continues.",
+    "kill_threshold": "Stop productizing this wedge if two weekly runs need more than 30 minutes of manual cleanup or if more than 10% of exceptions require context unavailable from the supported export."
+  }
+}

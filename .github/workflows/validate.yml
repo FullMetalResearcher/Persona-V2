@@ -1,0 +1,65 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Show runtime versions
+        run: |
+          node --version
+          git --version
+
+      - name: Parse product JSON
+        run: |
+          find .agents/plugins plugins/persona tests/persona/fixtures -type f -name '*.json' -print0 \
+            | xargs -0 -n1 node -e \
+              'JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8"))'
+
+      - name: Check Node syntax
+        run: |
+          find plugins/persona tests/persona -type f -name '*.mjs' -print0 \
+            | xargs -0 -n1 node --check
+
+      - name: Run dependency-free tests
+        run: node --test tests/persona/*.test.mjs
+
+      - name: Verify deterministic fixture artifacts
+        run: |
+          json="$RUNNER_TEMP/persona-fixture.json"
+          html="$RUNNER_TEMP/persona-fixture.html"
+          cp tests/persona/fixtures/generic-report.json "$json"
+          node plugins/persona/skills/persona/scripts/halton-sampler.mjs \
+            "$json" --apply
+          node plugins/persona/skills/persona/scripts/report-html-renderer.mjs \
+            "$json" "$html"
+          node plugins/persona/skills/persona/scripts/check-report.mjs \
+            "$json" "$html"
+          cmp tests/persona/fixtures/generic-report.json "$json"
+          cmp tests/persona/fixtures/generic-report.html "$html"
+
+      - name: Check repository hygiene
+        run: |
+          git diff --check
+          test -z "$(git ls-files '.agents/skills/**')"
+          test -z "$(git ls-files 'reports/**')"
+          test -z "$(git status --porcelain)"
+
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
