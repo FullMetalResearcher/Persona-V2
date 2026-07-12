@@ -1,0 +1,600 @@
+{
+  "title": "Persona Decision Report: AI Resident Communications for Italian Condominium Studios",
+  "slug": "ai-condominium-communications-italy",
+  "created_at": "2026-07-11",
+  "language": "en",
+  "idea_type": "B2B",
+  "grounding_mode": "web-grounded",
+  "input": {
+    "idea": "An AI-native platform for Italian condominium administrators that handles resident questions over email and WhatsApp, retrieves building documents and debt information, grounds replies in Italian condominium law, and later expands into meetings, payments, and full property management.",
+    "target_user": "Owners of Italian condominium-administration studios managing at least 20 buildings",
+    "use_case": "Triage repetitive resident messages and prepare accurate replies using each building's documents and account data",
+    "current_alternative": "Staff answer email, WhatsApp, and calls manually while using Domustudio or another condominium suite for records, payments, and formal communications",
+    "price": null,
+    "links": [],
+    "user_evidence": "The founder identified one-to-one resident communication as the daily pain but supplied no interviews, usage data, or pilot commitments."
+  },
+  "normalized_idea": "A separate assistant for Italian condominium studios that drafts resident replies from building records and legal context; adoption requires studios to connect operational data and trust the assistant with sensitive communications despite incumbent suites and direct AI competitors.",
+  "evidence": [
+    {
+      "id": "E01",
+      "source": "r/italy discussion: Amministratori di condominio, parliamone!",
+      "url": "https://www.reddit.com/r/italy/comments/18z2q11/amministratori_di_condominio_parliamone/",
+      "observation": "A participant who had worked in several condominium studios described highly varied calls reaching administrators, including on personal phones at all hours.",
+      "type": "buyer-language",
+      "strength": "mixed",
+      "implication": "Interrupt-driven resident communication is credible, but one anecdote does not establish how many studios will buy software to solve it."
+    },
+    {
+      "id": "E02",
+      "source": "r/italy discussion: Vi trovate bene con il vostro amministratore?",
+      "url": "https://www.reddit.com/r/italy/comments/1ok823j/vi_trovate_bene_con_il_vostro_amministratore_di/",
+      "observation": "Residents repeatedly reported ignored email and WhatsApp messages, weak communication, and difficulty obtaining timely responses or documents.",
+      "type": "buyer-language",
+      "strength": "mixed",
+      "implication": "Response quality affects residents, but resident frustration does not prove the administrator has budget or willingness to change workflow."
+    },
+    {
+      "id": "E03",
+      "source": "Danea Domustudio product page",
+      "url": "https://www.danea.it/software/domustudio/",
+      "observation": "Danea says more than 10,000 professional studios use Domustudio, which already covers accounting, payments, documents, incidents, meetings, email, PEC, postal communications, and resident web access.",
+      "type": "alternative",
+      "strength": "strong",
+      "implication": "A new assistant must work with incumbent data and communications rather than assume a blank operational workflow."
+    },
+    {
+      "id": "E04",
+      "source": "StudioAgent product page",
+      "url": "https://studioagent.it/",
+      "observation": "StudioAgent already markets unified email, WhatsApp, and voice handling with AI-drafted, law-aware replies and a 30-day studio trial.",
+      "type": "alternative",
+      "strength": "strong",
+      "implication": "The proposed communication wedge is an active product category, not an unoccupied opening; differentiation must be observable in a pilot."
+    },
+    {
+      "id": "E05",
+      "source": "DettoFatto.cloud product and guidance pages",
+      "url": "https://www.dettofatto.cloud/",
+      "observation": "DettoFatto targets administrators with WhatsApp inbox, ticketing, automatic replies, and content about fragmented requests across messaging channels.",
+      "type": "alternative",
+      "strength": "mixed",
+      "implication": "Message consolidation and automation are already explicit competitor promises, so feature parity will not create a switching reason."
+    },
+    {
+      "id": "E06",
+      "source": "Italian Data Protection Authority: Il condominio e la privacy",
+      "url": "https://www.garanteprivacy.it/documents/10160/2416443/Vademecum%2B-%2BIl%2Bcondominio%2Be%2Bla%2Bprivacy%2B-%2Bversione%2Bpagina%2Bsingola.pdf/3410cde4-b845-4490-a732-9e851a6c836f?version=1.4",
+      "observation": "The authority requires condominium information to remain accessible only to entitled people and treats contact details, documents, and arrears information as data requiring proportionate, secure handling.",
+      "type": "regulation",
+      "strength": "strong",
+      "implication": "Permissions, identity checks, audit trails, and sensitive-topic escalation are entry requirements, not later enterprise features."
+    }
+  ],
+  "adversarial_dimensions": [
+    {
+      "name": "portfolio scale",
+      "rationale": "Building count changes message volume, staffing leverage, and available budget.",
+      "buckets": [
+        "1-10 buildings",
+        "11-30 buildings",
+        "31-80 buildings",
+        "81-200 buildings",
+        "200+ buildings"
+      ]
+    },
+    {
+      "name": "resident message load",
+      "rationale": "Daily interruption volume determines whether communication is a nuisance or an urgent operating bottleneck.",
+      "buckets": [
+        "under 10 per day",
+        "10-30 per day",
+        "31-75 per day",
+        "76+ per day"
+      ]
+    },
+    {
+      "name": "incumbent suite dependence",
+      "rationale": "Reliance on the system of record determines integration burden and tolerance for another inbox.",
+      "buckets": [
+        "documents only",
+        "partial workflow",
+        "daily operational core",
+        "deep accounting integration"
+      ]
+    },
+    {
+      "name": "building data readiness",
+      "rationale": "Reply quality depends on whether building records are available, current, and machine-readable.",
+      "buckets": [
+        "mostly paper",
+        "scanned and inconsistent",
+        "structured exports",
+        "clean APIs"
+      ]
+    },
+    {
+      "name": "resident reply risk",
+      "rationale": "The acceptable automation boundary narrows as replies involve private, financial, or legal information.",
+      "buckets": [
+        "general information",
+        "building documents",
+        "payment and arrears",
+        "legal rights and disputes"
+      ]
+    },
+    {
+      "name": "pilot authority",
+      "rationale": "Pain does not convert into a trial unless the affected person can authorize data access and spending.",
+      "buckets": [
+        "no authority",
+        "can recommend",
+        "can approve small pilot",
+        "can approve rollout"
+      ]
+    }
+  ],
+  "sampling_method": "halton",
+  "adversarial_positions": [
+    {
+      "id": "A01",
+      "label": "Mid-size assistant with no pilot authority",
+      "dimension_values": {
+        "portfolio scale": "31-80 buildings",
+        "resident message load": "10-30 per day",
+        "incumbent suite dependence": "documents only",
+        "building data readiness": "mostly paper",
+        "resident reply risk": "general information",
+        "pilot authority": "no authority"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.5,
+        "resident message load": 0.333333,
+        "incumbent suite dependence": 0.2,
+        "building data readiness": 0.142857,
+        "resident reply risk": 0.090909,
+        "pilot authority": 0.076923
+      },
+      "stance": "reject",
+      "objection": "The studio has enough messages to feel interruption, but the sampled user cannot authorize a pilot and mostly paper records make a useful first demo expensive to prepare.",
+      "proof_trigger": "A studio owner joins the evaluation and one paper-heavy building can be indexed into accurate general-information drafts within one afternoon.",
+      "evidence_ids": [
+        "E01",
+        "E03"
+      ]
+    },
+    {
+      "id": "A02",
+      "label": "Busy small studio with scanned records",
+      "dimension_values": {
+        "portfolio scale": "11-30 buildings",
+        "resident message load": "31-75 per day",
+        "incumbent suite dependence": "partial workflow",
+        "building data readiness": "scanned and inconsistent",
+        "resident reply risk": "general information",
+        "pilot authority": "no authority"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.25,
+        "resident message load": 0.666667,
+        "incumbent suite dependence": 0.4,
+        "building data readiness": 0.285714,
+        "resident reply risk": 0.181818,
+        "pilot authority": 0.153846
+      },
+      "stance": "conditional",
+      "objection": "The message load is painful, but inconsistent scans and lack of buying authority could turn the assistant into a cleanup project that the owner never adopts.",
+      "proof_trigger": "A same-day redacted import produces usable general replies and the owner agrees to review a priced pilot.",
+      "evidence_ids": [
+        "E01",
+        "E03"
+      ]
+    },
+    {
+      "id": "A03",
+      "label": "Large studio with low message pressure and core-suite lock-in",
+      "dimension_values": {
+        "portfolio scale": "81-200 buildings",
+        "resident message load": "under 10 per day",
+        "incumbent suite dependence": "daily operational core",
+        "building data readiness": "scanned and inconsistent",
+        "resident reply risk": "building documents",
+        "pilot authority": "no authority"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.75,
+        "resident message load": 0.111111,
+        "incumbent suite dependence": 0.6,
+        "building data readiness": 0.428571,
+        "resident reply risk": 0.272727,
+        "pilot authority": 0.230769
+      },
+      "stance": "reject",
+      "objection": "Low daily message volume provides little urgency, while the incumbent already controls the operational workflow and the sampled user cannot approve a change.",
+      "proof_trigger": "The studio identifies a document-request backlog that costs measurable staff time despite its low inbound volume and grants integration access.",
+      "evidence_ids": [
+        "E03"
+      ]
+    },
+    {
+      "id": "A04",
+      "label": "Micro-studio recommender tied to deep accounting",
+      "dimension_values": {
+        "portfolio scale": "1-10 buildings",
+        "resident message load": "10-30 per day",
+        "incumbent suite dependence": "deep accounting integration",
+        "building data readiness": "structured exports",
+        "resident reply risk": "building documents",
+        "pilot authority": "can recommend"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.125,
+        "resident message load": 0.444444,
+        "incumbent suite dependence": 0.8,
+        "building data readiness": 0.571429,
+        "resident reply risk": 0.363636,
+        "pilot authority": 0.307692
+      },
+      "stance": "conditional",
+      "objection": "Structured exports make a pilot feasible, but a 1-10 building studio may not fund a separate assistant when the incumbent already anchors accounting and resident documents.",
+      "proof_trigger": "The owner accepts a price tied to hours saved and the assistant works from the existing export without creating a second source of truth.",
+      "evidence_ids": [
+        "E03"
+      ]
+    },
+    {
+      "id": "A05",
+      "label": "High-volume large studio with usable exports",
+      "dimension_values": {
+        "portfolio scale": "81-200 buildings",
+        "resident message load": "76+ per day",
+        "incumbent suite dependence": "documents only",
+        "building data readiness": "structured exports",
+        "resident reply risk": "building documents",
+        "pilot authority": "can recommend"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.625,
+        "resident message load": 0.777778,
+        "incumbent suite dependence": 0.04,
+        "building data readiness": 0.714286,
+        "resident reply risk": 0.454545,
+        "pilot authority": 0.384615
+      },
+      "stance": "support",
+      "objection": "This is a strong operating fit, but the recommender still needs to show why its document workflow beats StudioAgent, DettoFatto, and the incumbent's existing communications.",
+      "proof_trigger": "A side-by-side test resolves permission-safe document requests at least 40 percent faster than the studio's current tools with fewer than 20 percent heavily edited drafts.",
+      "evidence_ids": [
+        "E03",
+        "E04",
+        "E05"
+      ]
+    },
+    {
+      "id": "A06",
+      "label": "Low-volume small studio facing arrears risk",
+      "dimension_values": {
+        "portfolio scale": "11-30 buildings",
+        "resident message load": "under 10 per day",
+        "incumbent suite dependence": "documents only",
+        "building data readiness": "clean APIs",
+        "resident reply risk": "payment and arrears",
+        "pilot authority": "can recommend"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.375,
+        "resident message load": 0.222222,
+        "incumbent suite dependence": 0.24,
+        "building data readiness": 0.857143,
+        "resident reply risk": 0.545455,
+        "pilot authority": 0.461538
+      },
+      "stance": "reject",
+      "objection": "Clean APIs lower setup cost, but low message volume cannot justify a new tool whose first sensitive use case is payment and arrears information.",
+      "proof_trigger": "The studio demonstrates a recurring arrears workload worth more than the proposed price and accepts a draft-only, permission-checked workflow.",
+      "evidence_ids": [
+        "E03",
+        "E06"
+      ]
+    },
+    {
+      "id": "A07",
+      "label": "Very large portfolio with paper records and arrears queries",
+      "dimension_values": {
+        "portfolio scale": "200+ buildings",
+        "resident message load": "31-75 per day",
+        "incumbent suite dependence": "partial workflow",
+        "building data readiness": "mostly paper",
+        "resident reply risk": "payment and arrears",
+        "pilot authority": "can approve small pilot"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.875,
+        "resident message load": 0.555556,
+        "incumbent suite dependence": 0.44,
+        "building data readiness": 0.020408,
+        "resident reply risk": 0.636364,
+        "pilot authority": 0.538462
+      },
+      "stance": "conditional",
+      "objection": "Scale and pilot authority create budget, but paper-heavy records make payment answers slow to ground and dangerous to send without strict identity and approval controls.",
+      "proof_trigger": "A paid pilot on one building imports an approved ledger export and produces fully sourced arrears drafts without exposing another resident's data.",
+      "evidence_ids": [
+        "E03",
+        "E06"
+      ]
+    },
+    {
+      "id": "A08",
+      "label": "Overloaded micro-studio with sensitive paper workflows",
+      "dimension_values": {
+        "portfolio scale": "1-10 buildings",
+        "resident message load": "76+ per day",
+        "incumbent suite dependence": "daily operational core",
+        "building data readiness": "mostly paper",
+        "resident reply risk": "payment and arrears",
+        "pilot authority": "can approve small pilot"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.0625,
+        "resident message load": 0.888889,
+        "incumbent suite dependence": 0.64,
+        "building data readiness": 0.163265,
+        "resident reply risk": 0.727273,
+        "pilot authority": 0.615385
+      },
+      "stance": "conditional",
+      "objection": "The extreme message load creates urgency, but a tiny studio with core-suite dependence and mostly paper records may lack the time to make sensitive arrears automation safe.",
+      "proof_trigger": "The owner funds a one-building concierge pilot that needs less than two hours of setup and keeps every arrears reply human-approved.",
+      "evidence_ids": [
+        "E01",
+        "E03",
+        "E06"
+      ]
+    },
+    {
+      "id": "A09",
+      "label": "Risk-heavy studio with low volume and deep suite integration",
+      "dimension_values": {
+        "portfolio scale": "31-80 buildings",
+        "resident message load": "under 10 per day",
+        "incumbent suite dependence": "deep accounting integration",
+        "building data readiness": "scanned and inconsistent",
+        "resident reply risk": "legal rights and disputes",
+        "pilot authority": "can approve small pilot"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.5625,
+        "resident message load": 0.037037,
+        "incumbent suite dependence": 0.84,
+        "building data readiness": 0.306122,
+        "resident reply risk": 0.818182,
+        "pilot authority": 0.692308
+      },
+      "stance": "reject",
+      "objection": "Low message pressure does not compensate for scanned data, deep accounting integration, and legal-dispute replies where one confident error carries outsized liability.",
+      "proof_trigger": "The studio narrows the pilot away from disputes and identifies a high-frequency general-information workflow with a measurable cost baseline.",
+      "evidence_ids": [
+        "E03",
+        "E06"
+      ]
+    },
+    {
+      "id": "A10",
+      "label": "Authorized small studio testing legal replies",
+      "dimension_values": {
+        "portfolio scale": "11-30 buildings",
+        "resident message load": "10-30 per day",
+        "incumbent suite dependence": "documents only",
+        "building data readiness": "scanned and inconsistent",
+        "resident reply risk": "legal rights and disputes",
+        "pilot authority": "can approve rollout"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.3125,
+        "resident message load": 0.37037,
+        "incumbent suite dependence": 0.08,
+        "building data readiness": 0.44898,
+        "resident reply risk": 0.909091,
+        "pilot authority": 0.769231
+      },
+      "stance": "conditional",
+      "objection": "Rollout authority and lighter suite dependence help, but inconsistent records make legal-rights replies the wrong first workflow for establishing trust.",
+      "proof_trigger": "The owner agrees to start with low-risk general questions and adopts an explicit escalation list that blocks autonomous legal answers.",
+      "evidence_ids": [
+        "E06"
+      ]
+    },
+    {
+      "id": "A11",
+      "label": "Enterprise-scale buyer with structured data and rollout authority",
+      "dimension_values": {
+        "portfolio scale": "200+ buildings",
+        "resident message load": "31-75 per day",
+        "incumbent suite dependence": "partial workflow",
+        "building data readiness": "structured exports",
+        "resident reply risk": "general information",
+        "pilot authority": "can approve rollout"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.8125,
+        "resident message load": 0.703704,
+        "incumbent suite dependence": 0.28,
+        "building data readiness": 0.591837,
+        "resident reply risk": 0.008264,
+        "pilot authority": 0.846154
+      },
+      "stance": "support",
+      "objection": "This position has the clearest deployment path, but an authorized buyer can already evaluate several direct AI communication products and will demand a defensible integration or outcome advantage.",
+      "proof_trigger": "A paid comparison pilot beats the incumbent and direct alternatives on handling time, edit rate, auditability, and same-day setup.",
+      "evidence_ids": [
+        "E03",
+        "E04",
+        "E05"
+      ]
+    },
+    {
+      "id": "A12",
+      "label": "Authorized micro-studio with little communication pain",
+      "dimension_values": {
+        "portfolio scale": "1-10 buildings",
+        "resident message load": "under 10 per day",
+        "incumbent suite dependence": "partial workflow",
+        "building data readiness": "structured exports",
+        "resident reply risk": "general information",
+        "pilot authority": "can approve rollout"
+      },
+      "sampling_coordinates": {
+        "portfolio scale": 0.1875,
+        "resident message load": 0.148148,
+        "incumbent suite dependence": 0.48,
+        "building data readiness": 0.734694,
+        "resident reply risk": 0.099174,
+        "pilot authority": 0.923077
+      },
+      "stance": "reject",
+      "objection": "Clean exports and decision authority cannot create urgency when a 1-10 building studio receives fewer than ten messages a day and can continue answering manually.",
+      "proof_trigger": "The owner quantifies a recurring communication cost or growth constraint that exceeds the price of a separate assistant.",
+      "evidence_ids": [
+        "E01",
+        "E03"
+      ]
+    }
+  ],
+  "decision_factors": [
+    {
+      "name": "Repeated communication pain",
+      "status": "supported",
+      "reason": "Studio and resident accounts both describe fragmented, delayed, and after-hours communication.",
+      "evidence_ids": [
+        "E01",
+        "E02"
+      ]
+    },
+    {
+      "name": "Unoccupied product wedge",
+      "status": "contradicted",
+      "reason": "Multiple products already promise AI handling of the same email, WhatsApp, and call workflow.",
+      "evidence_ids": [
+        "E04",
+        "E05"
+      ]
+    },
+    {
+      "name": "Low-friction data access",
+      "status": "uncertain",
+      "reason": "The incumbent owns operational records, while real building files may be scanned, inconsistent, or permissioned.",
+      "evidence_ids": [
+        "E03",
+        "E06"
+      ]
+    },
+    {
+      "name": "Safe resident-facing automation",
+      "status": "uncertain",
+      "reason": "Sensitive documents, arrears, and legal questions require identity, scope, and approval controls not yet demonstrated.",
+      "evidence_ids": [
+        "E06"
+      ]
+    },
+    {
+      "name": "Willingness to pay for the wedge",
+      "status": "uncertain",
+      "reason": "No administrator interview, paid pilot, or switching commitment was supplied.",
+      "evidence_ids": []
+    }
+  ],
+  "hard_nos": [
+    {
+      "title": "The proposed wedge already has direct AI competitors",
+      "objection": "A unified inbox with law-aware AI drafts is already sold to Italian condominium studios, so the current pitch does not explain why a studio should choose or switch to this product.",
+      "why_it_matters": "Without a narrow advantage that survives a side-by-side pilot, implementation produces another category entrant rather than a reason to buy.",
+      "evidence_ids": [
+        "E04",
+        "E05"
+      ],
+      "position_ids": [
+        "A05",
+        "A11"
+      ],
+      "severity": "major",
+      "response": "Choose one measurable workflow competitors handle poorly, such as permission-safe document retrieval from an incumbent export, and test that claim directly."
+    },
+    {
+      "title": "Domustudio owns the data and the daily workflow",
+      "objection": "Studios already manage records, arrears, documents, payments, meetings, and formal communications inside an incumbent suite; a separate assistant risks becoming another inbox with incomplete context.",
+      "why_it_matters": "Reply quality and setup time depend on incumbent integration, making a standalone interface easy to trial but hard to adopt.",
+      "evidence_ids": [
+        "E03"
+      ],
+      "position_ids": [
+        "A03",
+        "A04",
+        "A09"
+      ],
+      "severity": "major",
+      "response": "Prove same-day value from one supported export or integration before promising broad platform replacement."
+    },
+    {
+      "title": "Sensitive answers require permissions before intelligence",
+      "objection": "Debt balances, private documents, and law-sensitive replies cannot be sent safely from a generic retrieval layer without identity checks, document scope, audit logs, and human escalation.",
+      "why_it_matters": "A single disclosure or confident legal error can erase the labor savings and make studios reject resident-facing automation.",
+      "evidence_ids": [
+        "E06"
+      ],
+      "position_ids": [
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "A10"
+      ],
+      "severity": "major",
+      "response": "Keep the first pilot draft-only, restrict it to approved topics, and show the source, recipient permissions, and approval event for every reply."
+    },
+    {
+      "title": "Pain is visible, buyer commitment is not",
+      "objection": "Resident frustration and after-hours calls demonstrate a communication problem, but there is no evidence that studio owners will grant data access or pay for this proposed solution.",
+      "why_it_matters": "Building before testing access and budget risks optimizing for residents while the administrator retains the cost and liability.",
+      "evidence_ids": [
+        "E01",
+        "E02"
+      ],
+      "position_ids": [
+        "A01",
+        "A02",
+        "A12"
+      ],
+      "severity": "major",
+      "response": "Ask studio owners for a paid, tightly scoped pilot rather than treating complaints or demo enthusiasm as demand."
+    }
+  ],
+  "recommendation": {
+    "verdict": "Test first",
+    "confidence": "medium",
+    "decisive_reason": "The communication pain is credible, but the exact AI inbox wedge is already occupied and the founder has not shown a data-access or outcome advantage that earns a studio pilot.",
+    "evidence_limits": [
+      "No Italian condominium administrator was interviewed for this report.",
+      "Competitor capability and adoption claims come from their own product pages.",
+      "No measured baseline exists for message volume, reply time, staff cost, or editing accuracy."
+    ],
+    "reversal_evidence": [
+      "Two studio owners agree to a paid pilot for the same narrow workflow after comparing the proposal with their current suite and AI alternatives.",
+      "One incumbent export or integration produces useful, permission-safe drafts on the first day without manual data cleanup.",
+      "A live pilot cuts median handling time by at least 40% while administrators heavily edit fewer than 20% of drafts."
+    ]
+  },
+  "mistakes_to_avoid": [
+    "Do not position a full property-management platform before proving one communication workflow competitors cannot already demonstrate.",
+    "Do not ask a new prospect for hundreds of sensitive resident messages before earning trust with a synthetic or redacted workflow test.",
+    "Do not automate sending for arrears, legal rights, or disputes before identity, permissions, sources, and human approval are visible.",
+    "Do not measure success by replies generated; measure handling time, edit rate, resolved requests, and willingness to pay.",
+    "Do not force studios to maintain a second system of record."
+  ],
+  "next_action": {
+    "action": "Show five owners of Italian condominium studios a clickable draft-only workflow for one permission-safe document request, using synthetic building data, and ask each to compare it with their current suite and any AI tool they have tried.",
+    "why_now": "This tests differentiation, integration expectations, trust boundaries, and pilot authority before requesting sensitive data or building the platform.",
+    "success_threshold": "At least three owners describe a current failure the workflow fixes, two authorize a follow-up using a redacted export, and one agrees to a paid pilot with a defined price.",
+    "kill_threshold": "Stop this wedge if fewer than two owners identify an unmet workflow or if none will provide a redacted export or pay after seeing the comparison."
+  }
+}

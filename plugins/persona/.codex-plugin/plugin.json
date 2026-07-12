@@ -1,0 +1,36 @@
+{
+  "name": "persona",
+  "version": "0.1.0",
+  "description": "Pressure-test product ideas with evidence-grounded adversarial coverage and a clear build decision.",
+  "author": {
+    "name": "FullMetalResearcher",
+    "url": "https://github.com/FullMetalResearcher"
+  },
+  "homepage": "https://github.com/FullMetalResearcher/Persona-V2",
+  "repository": "https://github.com/FullMetalResearcher/Persona-V2",
+  "license": "MIT",
+  "keywords": [
+    "startup",
+    "product-validation",
+    "indie-hackers",
+    "decision-making"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Persona",
+    "shortDescription": "Pressure-test a product idea before you build it.",
+    "longDescription": "Persona neutralizes founder framing, researches the status quo, samples 12 domain-specific counterpositions, and recommends Build, Test first, or Do not build.",
+    "developerName": "FullMetalResearcher",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/FullMetalResearcher/Persona-V2",
+    "defaultPrompt": [
+      "Pressure-test my product idea and tell me whether to build it.",
+      "Find the strongest reasons my startup idea could fail.",
+      "Create a Persona decision report for this product idea."
+    ]
+  }
+}

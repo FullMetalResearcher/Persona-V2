@@ -1,0 +1,108 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import { normalizeHttpUrl, renderReportHtml } from "./report-html-renderer.mjs";
+import { clone, loadGoldenHtml, loadGoldenReport } from "./test-helpers.mjs";
+
+test("normalizes only absolute HTTP and HTTPS URLs", () => {
+  assert.equal(normalizeHttpUrl("http://example.com/path"), "http://example.com/path");
+  assert.equal(normalizeHttpUrl("HTTPS://example.com/path?q=1"), "https://example.com/path?q=1");
+
+  for (const value of [
+    "javascript:alert(document.domain)",
+    "data:text/html,<h1>x</h1>",
+    "file:///etc/passwd",
+    " JaVaScRiPt:alert(1)",
+    "java\nscript:alert(1)",
+    "https://example.com/space here",
+    "//example.com/path",
+    "",
+    null,
+  ]) {
+    assert.equal(normalizeHttpUrl(value), null);
+  }
+});
+
+test("renders unsafe evidence URLs as escaped plain source text", async () => {
+  const golden = await loadGoldenReport();
+  const unsafe = [
+    "javascript:alert(document.domain)",
+    "data:text/html,<svg onload=alert(1)>",
+    "file:///etc/passwd",
+    " JaVaScRiPt:alert(1)",
+    "java\nscript:alert(1)",
+    "\"><img src=x onerror=alert(1)>",
+    "&quot;><script>alert(1)</script>",
+  ];
+
+  for (const url of unsafe) {
+    const report = clone(golden);
+    report.evidence = [{
+      ...report.evidence[0],
+      source: "Source <unsafe> & \"quoted\"",
+      url,
+    }];
+    const html = renderReportHtml(report);
+    assert.doesNotMatch(html, /<a href=/);
+    assert.doesNotMatch(html, /<script\b|<img\b|<svg\b|onerror\s*=|onload\s*=/i);
+    assert.match(html, /Source &lt;unsafe&gt; &amp; &quot;quoted&quot;/);
+  }
+});
+
+test("renders valid HTTP and HTTPS evidence links", async () => {
+  const golden = await loadGoldenReport();
+  golden.evidence = [
+    { ...golden.evidence[0], id: "E01", url: "http://example.com/a" },
+    { ...golden.evidence[1], id: "E02", url: "https://example.com/b?q=1" },
+  ];
+  const html = renderReportHtml(golden);
+  assert.match(html, /href="http:\/\/example\.com\/a" rel="noopener noreferrer"/);
+  assert.match(html, /href="https:\/\/example\.com\/b\?q=1" rel="noopener noreferrer"/);
+});
+
+test("escapes every user and model-controlled rendered field category", async () => {
+  const report = await loadGoldenReport();
+  const payload = `x\"><script data-pwned="&">alert('x')</script>`;
+
+  for (const field of ["title", "normalized_idea", "grounding_mode", "idea_type", "created_at"]) report[field] = payload;
+  for (const field of ["target_user", "use_case", "current_alternative", "price"]) report.input[field] = payload;
+
+  const evidence = report.evidence[0];
+  for (const field of ["id", "source", "observation", "implication", "type", "strength"]) evidence[field] = payload;
+  evidence.url = "javascript:<script>alert(1)</script>";
+
+  const dimension = report.adversarial_dimensions[0];
+  dimension.name = payload;
+  dimension.rationale = payload;
+  dimension.buckets[0] = payload;
+
+  const position = report.adversarial_positions[0];
+  for (const field of ["id", "label", "stance", "objection", "proof_trigger"]) position[field] = payload;
+  position.dimension_values = { [payload]: payload };
+  position.evidence_ids = [payload];
+
+  const factor = report.decision_factors[0];
+  for (const field of ["name", "status", "reason"]) factor[field] = payload;
+  factor.evidence_ids = [payload];
+
+  const hardNo = report.hard_nos[0];
+  for (const field of ["title", "objection", "why_it_matters", "severity", "response"]) hardNo[field] = payload;
+  hardNo.evidence_ids = [payload];
+  hardNo.position_ids = [payload];
+
+  const recommendation = report.recommendation;
+  for (const field of ["verdict", "confidence", "decisive_reason"]) recommendation[field] = payload;
+  recommendation.evidence_limits = [payload];
+  recommendation.reversal_evidence = [payload];
+  report.mistakes_to_avoid = [payload];
+  for (const field of ["action", "why_now", "success_threshold", "kill_threshold"]) report.next_action[field] = payload;
+
+  const html = renderReportHtml(report);
+  assert.doesNotMatch(html, /<script\b|data-pwned="|alert\('x'\)/i);
+  assert.match(html, /&lt;script data-pwned=&quot;&amp;&quot;&gt;/);
+});
+
+test("preserves the committed golden HTML for valid URLs", async () => {
+  const report = await loadGoldenReport();
+  assert.equal(renderReportHtml(report), await loadGoldenHtml());
+});

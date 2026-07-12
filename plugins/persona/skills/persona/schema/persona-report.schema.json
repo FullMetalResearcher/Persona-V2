@@ -1,0 +1,305 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona.local/schema/persona-report.schema.json",
+  "title": "Persona Decision Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title",
+    "slug",
+    "created_at",
+    "language",
+    "idea_type",
+    "grounding_mode",
+    "input",
+    "normalized_idea",
+    "evidence",
+    "adversarial_dimensions",
+    "sampling_method",
+    "adversarial_positions",
+    "decision_factors",
+    "hard_nos",
+    "recommendation",
+    "mistakes_to_avoid",
+    "next_action"
+  ],
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "created_at": { "type": "string", "format": "date" },
+    "language": { "type": "string", "minLength": 2 },
+    "idea_type": { "enum": ["B2B", "B2C", "marketplace/platform"] },
+    "grounding_mode": { "enum": ["web-grounded", "user-provided", "ungrounded"] },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["idea", "target_user", "use_case", "current_alternative", "price", "links", "user_evidence"],
+      "properties": {
+        "idea": { "type": "string", "minLength": 1 },
+        "target_user": { "type": "string", "minLength": 1 },
+        "use_case": { "type": "string", "minLength": 1 },
+        "current_alternative": { "type": "string", "minLength": 1 },
+        "price": { "type": ["string", "null"] },
+        "links": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[hH][tT][tT][pP][sS]?://[^\\s]+$"
+          }
+        },
+        "user_evidence": { "type": "string" }
+      }
+    },
+    "normalized_idea": { "type": "string", "minLength": 1 },
+    "evidence": {
+      "type": "array",
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/evidence" }
+    },
+    "adversarial_dimensions": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/dimension" }
+    },
+    "sampling_method": { "const": "halton" },
+    "adversarial_positions": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/position" }
+    },
+    "decision_factors": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/decisionFactor" }
+    },
+    "hard_nos": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/hardNo" }
+    },
+    "recommendation": { "$ref": "#/$defs/recommendation" },
+    "mistakes_to_avoid": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "next_action": { "$ref": "#/$defs/nextAction" }
+  },
+  "$defs": {
+    "stringArray": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source", "url", "observation", "type", "strength", "implication"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^E[0-9]{2}$" },
+        "source": { "type": "string", "minLength": 1 },
+        "url": {
+          "oneOf": [
+            { "const": "" },
+            {
+              "type": "string",
+              "pattern": "^[hH][tT][tT][pP][sS]?://[^\\s]+$"
+            }
+          ]
+        },
+        "observation": { "type": "string", "minLength": 1 },
+        "type": {
+          "enum": [
+            "buyer-language",
+            "current-behavior",
+            "alternative",
+            "switching-barrier",
+            "regulation",
+            "pricing",
+            "user-provided"
+          ]
+        },
+        "strength": { "enum": ["strong", "mixed", "weak"] },
+        "implication": { "type": "string", "minLength": 1 }
+      }
+    },
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "rationale", "buckets"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string", "minLength": 1 },
+        "buckets": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "dimension_values",
+        "sampling_coordinates",
+        "stance",
+        "objection",
+        "proof_trigger",
+        "evidence_ids"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^A(?:0[1-9]|1[0-2])$" },
+        "label": { "type": "string", "minLength": 1 },
+        "dimension_values": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "sampling_coordinates": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0, "exclusiveMaximum": 1 }
+        },
+        "stance": { "enum": ["reject", "conditional", "support"] },
+        "objection": { "type": "string", "minLength": 1 },
+        "proof_trigger": { "type": "string", "minLength": 1 },
+        "evidence_ids": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "decisionFactor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "status", "reason", "evidence_ids"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["supported", "uncertain", "contradicted"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "evidence_ids": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "hardNo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "objection", "why_it_matters", "evidence_ids", "position_ids", "severity", "response"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "objection": { "type": "string", "minLength": 1 },
+        "why_it_matters": { "type": "string", "minLength": 1 },
+        "evidence_ids": { "$ref": "#/$defs/stringArray" },
+        "position_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^A(?:0[1-9]|1[0-2])$" }
+        },
+        "severity": { "enum": ["fatal", "major", "manageable"] },
+        "response": { "type": "string", "minLength": 1 }
+      }
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "confidence", "decisive_reason", "evidence_limits", "reversal_evidence"],
+      "properties": {
+        "verdict": { "enum": ["Build", "Test first", "Do not build"] },
+        "confidence": { "enum": ["low", "medium", "high"] },
+        "decisive_reason": { "type": "string", "minLength": 1 },
+        "evidence_limits": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "reversal_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "nextAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "why_now", "success_threshold", "kill_threshold"],
+      "properties": {
+        "action": { "type": "string", "minLength": 1 },
+        "why_now": { "type": "string", "minLength": 1 },
+        "success_threshold": { "type": "string", "minLength": 1 },
+        "kill_threshold": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "grounding_mode": { "const": "web-grounded" } } },
+      "then": {
+        "properties": {
+          "evidence": {
+            "minItems": 3,
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/evidence" },
+                { "properties": { "url": { "type": "string", "minLength": 1 } } }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "grounding_mode": { "const": "user-provided" } } },
+      "then": { "properties": { "evidence": { "minItems": 1 } } }
+    },
+    {
+      "if": { "properties": { "grounding_mode": { "const": "ungrounded" } } },
+      "then": {
+        "properties": {
+          "recommendation": {
+            "allOf": [
+              { "$ref": "#/$defs/recommendation" },
+              { "properties": { "confidence": { "const": "low" } } }
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "adversarial_positions": {
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/position" },
+                { "properties": { "evidence_ids": { "minItems": 1 } } }
+              ]
+            }
+          },
+          "hard_nos": {
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/hardNo" },
+                { "properties": { "evidence_ids": { "minItems": 1 } } }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

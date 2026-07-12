@@ -1,0 +1,7 @@
+interface:
+  display_name: "Persona"
+  short_description: "Pressure-test an idea before building it"
+  default_prompt: "Use $persona to pressure-test my product idea and recommend whether to build it."
+
+policy:
+  allow_implicit_invocation: true

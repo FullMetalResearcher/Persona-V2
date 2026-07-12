@@ -1,3 +1,7 @@
 .DS_Store
-.agents/
-reports/
+.agents/*
+!.agents/plugins/
+.agents/plugins/*
+!.agents/plugins/marketplace.json
+reports/*
+!reports/.gitkeep
