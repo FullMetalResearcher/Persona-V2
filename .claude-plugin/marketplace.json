@@ -1,0 +1,15 @@
+{
+  "name": "persona",
+  "owner": {
+    "name": "FullMetalResearcher",
+    "url": "https://github.com/FullMetalResearcher"
+  },
+  "plugins": [
+    {
+      "name": "persona",
+      "source": "./plugins/persona",
+      "description": "Pressure-test a product idea before you build it. Produces a Build, Test first, or Do not build decision report.",
+      "category": "productivity"
+    }
+  ]
+}

@@ -25,7 +25,7 @@ jobs:
 
       - name: Parse product JSON
         run: |
-          find .agents/plugins plugins/persona tests/persona/fixtures -type f -name '*.json' -print0 \
+          find .agents/plugins .claude-plugin plugins/persona tests/persona/fixtures -type f -name '*.json' -print0 \
             | xargs -0 -n1 node -e \
               'JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8"))'
 
