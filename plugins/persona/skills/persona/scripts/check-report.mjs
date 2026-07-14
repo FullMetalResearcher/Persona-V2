@@ -21,6 +21,7 @@ const EVIDENCE_TYPES = [
 ];
 const EVIDENCE_STRENGTHS = ["strong", "mixed", "weak"];
 const HTTP_URL_PATTERN = /^https?:\/\/\S+$/i;
+const TLDR_JARGON_PATTERN = /halton|adversarial|counterposition|grounded/i;
 
 const OBJECT_FIELDS = {
   input: ["idea", "target_user", "use_case", "current_alternative", "price", "links", "user_evidence"],
@@ -42,6 +43,7 @@ const REQUIRED_TOP_LEVEL = [
   "grounding_mode",
   "input",
   "normalized_idea",
+  "tldr",
   "evidence",
   "adversarial_dimensions",
   "sampling_method",
@@ -64,6 +66,7 @@ const OBSOLETE_FIELDS = [
 ];
 
 const REQUIRED_SECTIONS = [
+  "tldr",
   "product-snapshot",
   "decision",
   "hard-nos",
@@ -193,6 +196,11 @@ export function validateReportObject(report) {
   if (!IDEA_TYPES.includes(report.idea_type)) errors.push(`idea_type must be one of: ${IDEA_TYPES.join(", ")}`);
   if (!GROUNDING_MODES.includes(report.grounding_mode)) errors.push(`grounding_mode must be one of: ${GROUNDING_MODES.join(", ")}`);
   if (!nonEmptyString(report.normalized_idea)) errors.push("normalized_idea must be a non-empty string");
+  if (!nonEmptyString(report.tldr)) {
+    errors.push("tldr must be a non-empty string");
+  } else if (TLDR_JARGON_PATTERN.test(report.tldr)) {
+    errors.push("tldr must use plain language without method jargon");
+  }
   if (report.sampling_method !== "halton") errors.push('sampling_method must be "halton"');
 
   if (validateObjectShape(report.input, "input", OBJECT_FIELDS.input, errors)) {
@@ -398,6 +406,15 @@ export function validateHtml(html, report, jsonPath = null, htmlPath = null) {
     if (index !== -1 && index < previousIndex) errors.push(`HTML section is out of order: ${section}`);
     if (index !== -1) previousIndex = index;
   });
+
+  const shareSnippet = html.match(/<pre\b[^>]*class="share-snippet"[^>]*>([\s\S]*?)<\/pre>/i)?.[1];
+  if (!shareSnippet) {
+    errors.push("HTML must include a shareable verdict snippet");
+  } else {
+    const expectedVerdictLine = `Verdict: ${report.recommendation?.verdict} (${report.recommendation?.confidence} confidence)`;
+    if (!shareSnippet.includes(expectedVerdictLine)) errors.push("HTML share snippet must include the report verdict and confidence");
+    if (!shareSnippet.includes("Next:")) errors.push("HTML share snippet must include a next-action line");
+  }
 
   if (/<script\b/i.test(html)) errors.push("HTML must not include JavaScript");
   if (/<link\b/i.test(html)) errors.push("HTML must not include external link tags");

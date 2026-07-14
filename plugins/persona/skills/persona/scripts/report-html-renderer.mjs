@@ -119,6 +119,13 @@ function verdictClass(verdict) {
   return "test-first";
 }
 
+function renderShareSnippet(report, recommendation) {
+  return `${escapeHtml(report.title)}
+Verdict: ${escapeHtml(recommendation.verdict)} (${escapeHtml(recommendation.confidence)} confidence)
+Why: ${escapeHtml(recommendation.decisive_reason)}
+Next: ${escapeHtml(report.next_action?.action)}`;
+}
+
 export function renderReportHtml(report) {
   const input = report.input || {};
   const recommendation = report.recommendation || {};
@@ -169,6 +176,9 @@ export function renderReportHtml(report) {
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
     section { padding: 32px 0; border-top: 1px solid var(--line); }
     .dek { color: var(--muted); font-size: 18px; max-width: 72ch; }
+    .tldr-lead { border-left: 5px solid var(--ink); padding: 2px 0 2px 20px; font-size: 19px; line-height: 1.6; }
+    .share-label { margin-top: 24px; font-size: 13px; font-weight: 700; text-transform: uppercase; }
+    .share-snippet { margin: 8px 0 0; border: 1px solid var(--line); background: var(--soft); padding: 16px 18px; white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     .metadata { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 20px; color: var(--muted); font-size: 14px; }
     .metadata span { white-space: nowrap; }
     .metadata strong { color: var(--ink); }
@@ -218,7 +228,7 @@ export function renderReportHtml(report) {
       header { margin-bottom: 20px; }
       section { padding: 22px 0; }
       h2, h3 { break-after: avoid; page-break-after: avoid; }
-      .decision-band, .hard-no, .thresholds div, tr { break-inside: avoid; page-break-inside: avoid; }
+      #tldr, .share-snippet, .decision-band, .hard-no, .thresholds div, tr { break-inside: avoid; page-break-inside: avoid; }
       .table-wrap { overflow: visible; }
       a { color: #000; }
     }
@@ -236,6 +246,13 @@ export function renderReportHtml(report) {
         <span><strong>Created:</strong> ${escapeHtml(report.created_at)}</span>
       </div>
     </header>
+
+    <section id="tldr">
+      <h2>TL;DR</h2>
+      <p class="tldr-lead">${escapeHtml(report.tldr)}</p>
+      <p class="share-label">Share this verdict</p>
+      <pre class="share-snippet" aria-label="Shareable verdict">${renderShareSnippet(report, recommendation)}</pre>
+    </section>
 
     <section id="product-snapshot">
       <h2>Product Snapshot</h2>

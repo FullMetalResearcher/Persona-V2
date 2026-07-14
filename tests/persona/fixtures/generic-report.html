@@ -41,6 +41,9 @@
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
     section { padding: 32px 0; border-top: 1px solid var(--line); }
     .dek { color: var(--muted); font-size: 18px; max-width: 72ch; }
+    .tldr-lead { border-left: 5px solid var(--ink); padding: 2px 0 2px 20px; font-size: 19px; line-height: 1.6; }
+    .share-label { margin-top: 24px; font-size: 13px; font-weight: 700; text-transform: uppercase; }
+    .share-snippet { margin: 8px 0 0; border: 1px solid var(--line); background: var(--soft); padding: 16px 18px; white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     .metadata { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 20px; color: var(--muted); font-size: 14px; }
     .metadata span { white-space: nowrap; }
     .metadata strong { color: var(--ink); }
@@ -90,7 +93,7 @@
       header { margin-bottom: 20px; }
       section { padding: 22px 0; }
       h2, h3 { break-after: avoid; page-break-after: avoid; }
-      .decision-band, .hard-no, .thresholds div, tr { break-inside: avoid; page-break-inside: avoid; }
+      #tldr, .share-snippet, .decision-band, .hard-no, .thresholds div, tr { break-inside: avoid; page-break-inside: avoid; }
       .table-wrap { overflow: visible; }
       a { color: #000; }
     }
@@ -108,6 +111,16 @@
         <span><strong>Created:</strong> 2026-07-12</span>
       </div>
     </header>
+
+    <section id="tldr">
+      <h2>TL;DR</h2>
+      <p class="tldr-lead">Persona evaluated a self-serve version of an existing paid failed-payment reporting service and recommends Build with medium confidence. Three customers already pay for the manual workflow and have asked for faster access, so the narrow automation has a credible first market. Build the smallest importer for one current customer and verify that its output matches the manual report before expanding.</p>
+      <p class="share-label">Share this verdict</p>
+      <pre class="share-snippet" aria-label="Shareable verdict">Persona Decision Report: Self-Serve Failed-Payment Exception Reports
+Verdict: Build (medium confidence)
+Why: Three reachable customers already pay for the repeated workflow and have requested the exact latency-reducing self-serve wedge proposed for the first build.
+Next: Build the CSV-to-exception-report path for one paying founder and run it beside the manual report for the next four Mondays.</pre>
+    </section>
 
     <section id="product-snapshot">
       <h2>Product Snapshot</h2>

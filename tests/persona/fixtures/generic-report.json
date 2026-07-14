@@ -15,6 +15,7 @@
     "user_evidence": "Three founders pay EUR 250 monthly, send the same Stripe CSV every Monday, and have asked for self-serve access because the manual report arrives too slowly."
   },
   "normalized_idea": "Convert an existing paid weekly service into a narrow self-serve importer that accepts the same Stripe export and reproduces the same exception report faster for the current three customers.",
+  "tldr": "Persona evaluated a self-serve version of an existing paid failed-payment reporting service and recommends Build with medium confidence. Three customers already pay for the manual workflow and have asked for faster access, so the narrow automation has a credible first market. Build the smallest importer for one current customer and verify that its output matches the manual report before expanding.",
   "evidence": [
     {
       "id": "E01",

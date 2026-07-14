@@ -169,6 +169,11 @@ Set confidence separately:
 - `high`: direct behavior evidence and independent sources support the decisive
   conclusion
 
+After deciding the verdict, write `tldr` in the report language as 2-4 plain
+sentences. State what was evaluated, the verdict, the decisive reason, and the
+immediate next step. Do not use method jargon such as "Halton", "adversarial",
+"counterposition", or "grounded".
+
 State at least one evidence limit and one item of reversal evidence. Add 3-5
 idea-specific mistakes to avoid if the builder proceeds anyway.
 
@@ -192,7 +197,7 @@ Use the bundled `schema/persona-report.schema.json`. Required top-level fields:
 
 ```text
 title, slug, created_at, language, idea_type, grounding_mode,
-input, normalized_idea, evidence, adversarial_dimensions, sampling_method,
+input, normalized_idea, tldr, evidence, adversarial_dimensions, sampling_method,
 adversarial_positions, decision_factors, hard_nos, recommendation,
 mistakes_to_avoid, next_action
 ```
@@ -224,14 +229,15 @@ renderer fails; fix the structured object or bundled tool path.
 
 The HTML sections must appear in this order:
 
-1. Product Snapshot
-2. Decision
-3. Hard Nos
-4. Evidence and Limits
-5. Adversarial Coverage
-6. What Would Change the Decision
-7. Building Anyway? Avoid These Mistakes
-8. Do This Now
+1. TL;DR
+2. Product Snapshot
+3. Decision
+4. Hard Nos
+5. Evidence and Limits
+6. Adversarial Coverage
+7. What Would Change the Decision
+8. Building Anyway? Avoid These Mistakes
+9. Do This Now
 
 ## Final Response
 
@@ -241,5 +247,6 @@ Tell the user:
 - the decisive reason in one sentence
 - the JSON and HTML paths
 - any material evidence limitation
+- that the report opens with a shareable verdict snippet
 
 Do not repeat the full report in chat.

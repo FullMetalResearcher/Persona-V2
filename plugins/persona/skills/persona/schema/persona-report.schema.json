@@ -13,6 +13,7 @@
     "grounding_mode",
     "input",
     "normalized_idea",
+    "tldr",
     "evidence",
     "adversarial_dimensions",
     "sampling_method",
@@ -52,6 +53,7 @@
       }
     },
     "normalized_idea": { "type": "string", "minLength": 1 },
+    "tldr": { "type": "string", "minLength": 1 },
     "evidence": {
       "type": "array",
       "maxItems": 7,

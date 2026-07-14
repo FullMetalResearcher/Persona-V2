@@ -60,11 +60,29 @@ test("renders valid HTTP and HTTPS evidence links", async () => {
   assert.match(html, /href="https:\/\/example\.com\/b\?q=1" rel="noopener noreferrer"/);
 });
 
+test("renders the tldr first with a shareable verdict", async () => {
+  const report = await loadGoldenReport();
+  const html = renderReportHtml(report);
+
+  assert.ok(html.indexOf('id="tldr"') < html.indexOf('id="product-snapshot"'));
+  assert.match(html, /<pre class="share-snippet"[^>]*>[\s\S]*Verdict: Build \(medium confidence\)/);
+  assert.ok(html.includes(`Next: ${report.next_action.action}`));
+});
+
+test("escapes tldr content", async () => {
+  const report = await loadGoldenReport();
+  report.tldr = `Stop <script>alert("x")</script> & test.`;
+
+  const html = renderReportHtml(report);
+  assert.doesNotMatch(html, /<script\b/i);
+  assert.match(html, /Stop &lt;script&gt;alert\(&quot;x&quot;\)&lt;\/script&gt; &amp; test\./);
+});
+
 test("escapes every user and model-controlled rendered field category", async () => {
   const report = await loadGoldenReport();
   const payload = `x\"><script data-pwned="&">alert('x')</script>`;
 
-  for (const field of ["title", "normalized_idea", "grounding_mode", "idea_type", "created_at"]) report[field] = payload;
+  for (const field of ["title", "normalized_idea", "tldr", "grounding_mode", "idea_type", "created_at"]) report[field] = payload;
   for (const field of ["target_user", "use_case", "current_alternative", "price"]) report.input[field] = payload;
 
   const evidence = report.evidence[0];

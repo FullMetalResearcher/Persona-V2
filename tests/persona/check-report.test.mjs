@@ -32,6 +32,20 @@ test("accepts valid reports in all grounding modes", async () => {
   assertValid(makeUngrounded(clone(golden)), "ungrounded");
 });
 
+test("requires a plain-language tldr", async () => {
+  const golden = await loadGoldenReport();
+
+  const missing = clone(golden);
+  delete missing.tldr;
+  assertInvalid(missing, /Missing top-level field: tldr/);
+
+  for (const jargon of ["Halton", "adversarial", "counterposition", "grounded"]) {
+    const report = clone(golden);
+    report.tldr = `This ${jargon} analysis recommends Build.`;
+    assertInvalid(report, /tldr must use plain language without method jargon/);
+  }
+});
+
 test("rejects invalid and unsafe input and evidence URLs", async () => {
   const golden = await loadGoldenReport();
   const unsafe = [
@@ -235,6 +249,9 @@ test("rejects incomplete, active, external, obsolete, and mismatched HTML", asyn
   const html = renderReportHtml(report);
   const unsafeVariants = [
     [html.replace("<!doctype html>", ""), /must start with <!doctype html>/],
+    [html.replace('id="tldr"', 'id="removed-tldr"'), /missing section id: tldr/],
+    [html.replace('class="share-snippet"', 'class="removed-share-snippet"'), /must include a shareable verdict snippet/],
+    [html.replace("Verdict: Build (medium confidence)", "Verdict: Test first (low confidence)"), /must include the report verdict and confidence/],
     [html.replace('id="hard-nos"', 'id="removed-hard-nos"'), /missing section id: hard-nos/],
     [html.replace("</body>", "<script>alert(1)</script></body>"), /must not include JavaScript/],
     [html.replace("</head>", '<link rel="stylesheet" href="https://example.com/x.css"></head>'), /must not include external link tags/],
