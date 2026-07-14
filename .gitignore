@@ -4,3 +4,4 @@
 .agents/plugins/*
 !.agents/plugins/marketplace.json
 reports/
+PLAN.md
