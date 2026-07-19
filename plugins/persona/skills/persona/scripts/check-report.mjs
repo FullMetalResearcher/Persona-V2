@@ -68,15 +68,15 @@ const OBSOLETE_FIELDS = [
 ];
 
 const REQUIRED_SECTIONS = [
-  "tldr",
-  "product-snapshot",
-  "decision",
-  "hard-nos",
-  "evidence-and-limits",
-  "adversarial-coverage",
-  "what-would-change",
-  "building-anyway",
-  "do-this-now",
+  "## TL;DR",
+  "## Product Snapshot",
+  "## Decision",
+  "## Hard Nos",
+  "## Evidence and Limits",
+  "## Adversarial Coverage",
+  "## What Would Change the Decision",
+  "## Building Anyway? Avoid These Mistakes",
+  "## Do This Now",
 ];
 
 const LEGACY_DIMENSION_GRIDS = [
@@ -421,67 +421,99 @@ export function validateReportObject(report) {
   return { errors };
 }
 
-export function validateHtml(html, report, jsonPath = null, htmlPath = null) {
+function countTableDelimiters(line) {
+  let count = 0;
+  for (let index = 0; index < line.length; index += 1) {
+    if (line[index] !== "|") continue;
+    let backslashes = 0;
+    for (let cursor = index - 1; cursor >= 0 && line[cursor] === "\\"; cursor -= 1) backslashes += 1;
+    if (backslashes % 2 === 0) count += 1;
+  }
+  return count;
+}
+
+function validateTableIntegrity(markdown, errors) {
+  const lines = markdown.split(/\r?\n/);
+  let headerDelimiterCount = null;
+
+  lines.forEach((line, index) => {
+    if (!line.startsWith("|")) {
+      headerDelimiterCount = null;
+      return;
+    }
+
+    const delimiterCount = countTableDelimiters(line);
+    if (headerDelimiterCount === null) {
+      headerDelimiterCount = delimiterCount;
+      return;
+    }
+    if (delimiterCount !== headerDelimiterCount) {
+      errors.push(`Markdown table row ${index + 1} has ${delimiterCount} delimiters; expected ${headerDelimiterCount}`);
+    }
+  });
+}
+
+export function validateMarkdown(markdown, report, jsonPath = null, mdPath = null) {
   const errors = [];
 
-  if (!html.toLowerCase().startsWith("<!doctype html>")) errors.push("HTML must start with <!doctype html>");
   let previousIndex = -1;
-  REQUIRED_SECTIONS.forEach((section) => {
-    const index = html.indexOf(`id="${section}"`);
-    if (index === -1) errors.push(`HTML missing section id: ${section}`);
-    if (index !== -1 && index < previousIndex) errors.push(`HTML section is out of order: ${section}`);
+  const lines = markdown.split(/\r?\n/);
+  // These headings are the public anchors. Keep this literal validation in sync
+  // if section headings are ever localized.
+  REQUIRED_SECTIONS.forEach((heading) => {
+    const index = lines.indexOf(heading);
+    if (index === -1) errors.push(`Markdown missing section heading: ${heading}`);
+    if (index !== -1 && index < previousIndex) errors.push(`Markdown section is out of order: ${heading}`);
     if (index !== -1) previousIndex = index;
   });
 
-  const shareSnippet = html.match(/<pre\b[^>]*class="share-snippet"[^>]*>([\s\S]*?)<\/pre>/i)?.[1];
+  const shareSnippet = markdown.match(/^```(?:text)?\r?\n([\s\S]*?)\r?\n```$/m)?.[1];
   if (!shareSnippet) {
-    errors.push("HTML must include a shareable verdict snippet");
+    errors.push("Markdown must include a fenced shareable verdict snippet");
   } else {
     const expectedVerdictLine = `Verdict: ${report.recommendation?.verdict} (${report.recommendation?.confidence} confidence)`;
-    if (!shareSnippet.includes(expectedVerdictLine)) errors.push("HTML share snippet must include the report verdict and confidence");
-    if (!shareSnippet.includes("Next:")) errors.push("HTML share snippet must include a next-action line");
+    if (!shareSnippet.includes(expectedVerdictLine)) errors.push("Markdown share snippet must include the report verdict and confidence");
+    if (!shareSnippet.includes("Next:")) errors.push("Markdown share snippet must include a next-action line");
   }
 
-  if (/<script\b/i.test(html)) errors.push("HTML must not include JavaScript");
-  if (/<link\b/i.test(html)) errors.push("HTML must not include external link tags");
-  if (/\bsrc\s*=/i.test(html)) errors.push("HTML must not include external assets");
-  if (/@import/i.test(html)) errors.push("HTML must not import remote CSS");
-  if (!/@media print/i.test(html)) errors.push("HTML must include print styles");
-  if (/WOULD_PAY|NEEDS_PROOF|HARD_NO|Persona Sampling Map|Persona Reactions/i.test(html)) {
-    errors.push("HTML contains obsolete persona or purchase-verdict language");
+  // Angle-bracket HTTP(S) destinations are required Markdown link syntax, not
+  // raw HTML, so remove only those well-formed destinations before this pin.
+  const withoutLinkDestinations = markdown.replace(/\]\(<https?:\/\/[^\s<>]+>\)/gi, "](destination)");
+  if (/<[a-zA-Z!\/]/.test(withoutLinkDestinations)) errors.push("Markdown must not include raw HTML");
+  validateTableIntegrity(markdown, errors);
+
+  if (/WOULD(?:\\)?_PAY|NEEDS(?:\\)?_PROOF|HARD(?:\\)?_NO|Persona Sampling Map|Persona Reactions/i.test(markdown)) {
+    errors.push("Markdown contains obsolete persona or purchase-verdict language");
   }
-  if (/\b\d+\s*\/\s*12\b/.test(html)) errors.push("HTML must not present sampled positions as a vote tally");
+  if (/\b\d+\s*\/\s*12\b/.test(markdown)) errors.push("Markdown must not present sampled positions as a vote tally");
 
   (report.adversarial_positions || []).forEach((position) => {
-    if (!html.includes(position.id)) errors.push(`HTML must include adversarial position ${position.id}`);
+    if (!markdown.includes(position.id)) errors.push(`Markdown must include adversarial position ${position.id}`);
   });
 
-  if (!html.includes("Why this segment:")) errors.push("HTML must include the segment rationale line");
-  if (!html.includes("Recruiting channel:")) errors.push("HTML must include the recruiting channel line");
-  if ((report.evidence || []).length > 0 && !html.includes("Evidence base:")) {
-    errors.push("HTML must include the evidence-mix summary");
+  if (!markdown.includes("Why this segment:")) errors.push("Markdown must include the segment rationale line");
+  if (!markdown.includes("Recruiting channel:")) errors.push("Markdown must include the recruiting channel line");
+  if ((report.evidence || []).length > 0 && !markdown.includes("Evidence base:")) {
+    errors.push("Markdown must include the evidence-mix summary");
   }
 
-  const hasSourceUrls = (report.evidence || []).some((item) => item.url);
-  if (hasSourceUrls && !html.includes('rel="noopener noreferrer"')) errors.push("HTML source links must use rel=\"noopener noreferrer\"");
-
-  if (jsonPath && htmlPath) {
+  if (jsonPath && mdPath) {
     const jsonBase = path.basename(jsonPath, ".json");
-    const htmlBase = path.basename(htmlPath, ".html");
-    if (jsonBase !== htmlBase) errors.push("JSON and HTML filenames must use the same slug/date suffix");
+    const mdBase = path.basename(mdPath, ".md");
+    if (jsonBase !== mdBase) errors.push("JSON and Markdown filenames must use the same slug/date suffix");
   }
 
   return { errors };
 }
 
-export async function checkReport(jsonPath, htmlPath = null) {
+export async function checkReport(jsonPath, mdPath = null) {
   const startedAt = performance.now();
   const report = JSON.parse(await readFile(jsonPath, "utf8"));
   const errors = [...validateReportObject(report).errors];
 
-  if (htmlPath) {
-    const html = await readFile(htmlPath, "utf8");
-    errors.push(...validateHtml(html, report, jsonPath, htmlPath).errors);
+  if (mdPath) {
+    const markdown = await readFile(mdPath, "utf8");
+    errors.push(...validateMarkdown(markdown, report, jsonPath, mdPath).errors);
   }
 
   return {
@@ -501,9 +533,9 @@ export async function checkReport(jsonPath, htmlPath = null) {
 
 runCli(
   import.meta.url,
-  "Usage: node check-report.mjs <report.json> [report.html]",
-  async (jsonPath, htmlPath) => {
-    const result = await checkReport(jsonPath, htmlPath);
+  "Usage: node check-report.mjs <report.json> [report.md]",
+  async (jsonPath, mdPath) => {
+    const result = await checkReport(jsonPath, mdPath);
     const output = JSON.stringify(result, null, 2);
     if (!result.ok) {
       console.error(output);
