@@ -54,7 +54,11 @@
     .facts dd { margin: 2px 0 0; }
     .decision-band { border-left: 5px solid var(--amber); background: var(--amber-soft); padding: 22px 24px; }
     .decision-band.build { border-color: var(--green); background: var(--green-soft); }
+    .decision-band.test-first { border-color: var(--amber); background: var(--amber-soft); }
     .decision-band.do-not-build { border-color: var(--red); background: var(--red-soft); }
+    .contradiction-note { margin: 10px 0 12px; }
+    .evidence-quote, .coherence-note { font-style: italic; }
+    .coherence-note { display: inline-block; margin-top: 6px; }
     .verdict { display: block; margin-bottom: 5px; font-size: 28px; font-weight: 760; }
     .confidence { color: var(--muted); font-size: 14px; }
     .table-wrap { width: 100%; overflow-x: auto; }
@@ -218,7 +222,7 @@ Next: Build the CSV-to-exception-report path for one paying founder and run it b
 
     <section id="evidence-and-limits">
       <h2>Evidence and Limits</h2>
-      <div class="table-wrap"><table><thead><tr><th>ID</th><th>Observation</th><th>Implication</th><th>Source</th></tr></thead><tbody><tr>
+      <p class="quiet">Evidence base: 2 builder-supplied items, 1 behavior observation, 1 first-person account.</p><div class="table-wrap"><table><thead><tr><th>ID</th><th>Observation</th><th>Implication</th><th>Source</th></tr></thead><tbody><tr>
         <td><code>E01</code><br><span class="quiet">user-provided · strong</span></td>
         <td>Three small SaaS founders each currently pay EUR 250 per month for the manually produced report.</td>
         <td>The first users, budget, and existing paid behavior are already observable.</td>
@@ -232,7 +236,7 @@ Next: Build the CSV-to-exception-report path for one paying founder and run it b
       </tr>
 <tr>
         <td><code>E03</code><br><span class="quiet">buyer-language · strong</span></td>
-        <td>All three paying founders asked for self-serve access because the manual report arrives too slowly.</td>
+        <td>All three paying founders asked for self-serve access because the manual report arrives too slowly.<br><span class="quiet evidence-quote">“We keep waiting on the Monday report; can we run the same thing ourselves?”</span></td>
         <td>The requested wedge addresses a stated latency problem rather than an invented adjacent feature.</td>
         <td>Founder-supplied product request</td>
       </tr>
@@ -304,7 +308,7 @@ Next: Build the CSV-to-exception-report path for one paying founder and run it b
       </tr>
 <tr>
         <td><code>A08</code><br><strong>Daily finance operator</strong></td>
-        <td class="position-values"><span><strong>monthly failed-payment volume:</strong> under 25</span><br><span><strong>exception complexity:</strong> manual judgment needed</span><br><span><strong>finance review cadence:</strong> weekly</span><br><span><strong>Stripe export consistency:</strong> stable standard export</span><br><span><strong>recovery urgency:</strong> same-day intervention</span><br><span><strong>pilot authority:</strong> founder approves workflow</span></td>
+        <td class="position-values"><span><strong>monthly failed-payment volume:</strong> under 25</span><br><span><strong>exception complexity:</strong> manual judgment needed</span><br><span><strong>finance review cadence:</strong> weekly</span><br><span><strong>Stripe export consistency:</strong> stable standard export</span><br><span><strong>recovery urgency:</strong> same-day intervention</span><br><span><strong>pilot authority:</strong> founder approves workflow</span><br><span class="coherence-note">Note: Same-day urgency rarely co-occurs with under-25 volume; read as a small account where each failed payment is material.</span></td>
         <td><span class="stance stance-support">support</span><br>Daily cadence strengthens value, but it could pull the product toward live integrations before the CSV wedge is proven.</td>
         <td>The customer accepts scheduled CSV use for the pilot without requesting OAuth.<br><span class="refs">E03, E04</span></td>
       </tr>
@@ -356,6 +360,8 @@ Next: Build the CSV-to-exception-report path for one paying founder and run it b
       <h2>Do This Now</h2>
       <p><strong>Action:</strong> Build the CSV-to-exception-report path for one paying founder and run it beside the manual report for the next four Mondays.</p>
       <p><strong>Why now:</strong> The comparison tests the only material unknown: whether the known input contains enough information to reproduce the trusted output without hidden service work.</p>
+      <p><strong>Why this segment:</strong> The segment and price are not assumptions: the three founders already pay EUR 250 monthly for this exact report (E01, E03).</p>
+      <p><strong>Recruiting channel:</strong> Direct outreach to the three current manual-report customers; the pilot founder is chosen from them.</p>
       <div class="thresholds">
         <div><strong>Success threshold</strong>For four consecutive weeks, the founder completes the upload unassisted, receives the report within five minutes, at least 95% of exception classifications match the accepted manual report, and the EUR 250 monthly payment continues.</div>
         <div><strong>Kill threshold</strong>Stop productizing this wedge if two weekly runs need more than 30 minutes of manual cleanup or if more than 10% of exceptions require context unavailable from the supported export.</div>

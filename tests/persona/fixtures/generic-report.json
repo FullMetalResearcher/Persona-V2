@@ -24,7 +24,9 @@
       "observation": "Three small SaaS founders each currently pay EUR 250 per month for the manually produced report.",
       "type": "user-provided",
       "strength": "strong",
-      "implication": "The first users, budget, and existing paid behavior are already observable."
+      "implication": "The first users, budget, and existing paid behavior are already observable.",
+      "accessed_at": "",
+      "quote": ""
     },
     {
       "id": "E02",
@@ -33,7 +35,9 @@
       "observation": "Each customer sends the same Stripe CSV every Monday and waits for reconciliation.",
       "type": "current-behavior",
       "strength": "strong",
-      "implication": "The job repeats on a stable cadence with a known input and output."
+      "implication": "The job repeats on a stable cadence with a known input and output.",
+      "accessed_at": "",
+      "quote": ""
     },
     {
       "id": "E03",
@@ -42,7 +46,9 @@
       "observation": "All three paying founders asked for self-serve access because the manual report arrives too slowly.",
       "type": "buyer-language",
       "strength": "strong",
-      "implication": "The requested wedge addresses a stated latency problem rather than an invented adjacent feature."
+      "implication": "The requested wedge addresses a stated latency problem rather than an invented adjacent feature.",
+      "accessed_at": "",
+      "quote": "We keep waiting on the Monday report; can we run the same thing ourselves?"
     },
     {
       "id": "E04",
@@ -51,7 +57,9 @@
       "observation": "The proposed first version imports the same export and returns the same exception report rather than replacing subscription finance operations.",
       "type": "user-provided",
       "strength": "strong",
-      "implication": "A narrow first build can be compared directly against the paid manual baseline."
+      "implication": "A narrow first build can be compared directly against the paid manual baseline.",
+      "accessed_at": "",
+      "quote": ""
     }
   ],
   "adversarial_dimensions": [
@@ -143,7 +151,8 @@
       "evidence_ids": [
         "E01",
         "E03"
-      ]
+      ],
+      "coherence_note": ""
     },
     {
       "id": "A02",
@@ -170,7 +179,8 @@
       "evidence_ids": [
         "E02",
         "E04"
-      ]
+      ],
+      "coherence_note": ""
     },
     {
       "id": "A03",
@@ -197,7 +207,8 @@
       "evidence_ids": [
         "E02",
         "E04"
-      ]
+      ],
+      "coherence_note": ""
     },
     {
       "id": "A04",
@@ -223,7 +234,8 @@
       "proof_trigger": "The first supported account shape completes four runs with no manual column repair.",
       "evidence_ids": [
         "E02"
-      ]
+      ],
+      "coherence_note": ""
     },
     {
       "id": "A05",
@@ -250,7 +262,8 @@
       "evidence_ids": [
         "E02",
         "E03"
-      ]
+      ],
+      "coherence_note": ""
     },
     {
       "id": "A06",
@@ -276,7 +289,8 @@
       "proof_trigger": "Fewer than 10% of exceptions require context outside the export.",
       "evidence_ids": [
         "E04"
-      ]
+      ],
+      "coherence_note": ""
     },
     {
       "id": "A07",
@@ -303,7 +317,8 @@
       "evidence_ids": [
         "E01",
         "E02"
-      ]
+      ],
+      "coherence_note": ""
     },
     {
       "id": "A08",
@@ -330,7 +345,8 @@
       "evidence_ids": [
         "E03",
         "E04"
-      ]
+      ],
+      "coherence_note": "Same-day urgency rarely co-occurs with under-25 volume; read as a small account where each failed payment is material."
     },
     {
       "id": "A09",
@@ -357,7 +373,8 @@
       "evidence_ids": [
         "E02",
         "E04"
-      ]
+      ],
+      "coherence_note": ""
     },
     {
       "id": "A10",
@@ -384,7 +401,8 @@
       "evidence_ids": [
         "E02",
         "E04"
-      ]
+      ],
+      "coherence_note": ""
     },
     {
       "id": "A11",
@@ -411,7 +429,8 @@
       "evidence_ids": [
         "E01",
         "E03"
-      ]
+      ],
+      "coherence_note": ""
     },
     {
       "id": "A12",
@@ -438,7 +457,8 @@
       "evidence_ids": [
         "E03",
         "E04"
-      ]
+      ],
+      "coherence_note": ""
     }
   ],
   "decision_factors": [
@@ -549,7 +569,8 @@
       "Historical report diffs show that the CSV lacks critical context for most exceptions.",
       "The first paying founder refuses to use the importer without broad adjacent finance features.",
       "A four-week pilot requires recurring manual cleanup or produces materially different recovery actions."
-    ]
+    ],
+    "contradiction_note": ""
   },
   "mistakes_to_avoid": [
     "Do not add live Stripe OAuth before the existing CSV import proves the output.",
@@ -562,6 +583,8 @@
     "action": "Build the CSV-to-exception-report path for one paying founder and run it beside the manual report for the next four Mondays.",
     "why_now": "The comparison tests the only material unknown: whether the known input contains enough information to reproduce the trusted output without hidden service work.",
     "success_threshold": "For four consecutive weeks, the founder completes the upload unassisted, receives the report within five minutes, at least 95% of exception classifications match the accepted manual report, and the EUR 250 monthly payment continues.",
-    "kill_threshold": "Stop productizing this wedge if two weekly runs need more than 30 minutes of manual cleanup or if more than 10% of exceptions require context unavailable from the supported export."
+    "kill_threshold": "Stop productizing this wedge if two weekly runs need more than 30 minutes of manual cleanup or if more than 10% of exceptions require context unavailable from the supported export.",
+    "segment_rationale": "The segment and price are not assumptions: the three founders already pay EUR 250 monthly for this exact report (E01, E03).",
+    "recruiting_channel": "Direct outreach to the three current manual-report customers; the pilot founder is chosen from them."
   }
 }

@@ -28,12 +28,14 @@ test("applySampling preserves enriched position fields and repairs sampled field
   const modified = structuredClone(report);
   modified.adversarial_positions[0].label = "Preserved label";
   modified.adversarial_positions[0].objection = "Preserved objection";
+  modified.adversarial_positions[0].coherence_note = "Preserved coherence note";
   modified.adversarial_positions[0].dimension_values = { wrong: "value" };
   modified.adversarial_positions[0].sampling_coordinates = { wrong: 2 };
 
   const applied = applySampling(modified);
   assert.equal(applied.adversarial_positions[0].label, "Preserved label");
   assert.equal(applied.adversarial_positions[0].objection, "Preserved objection");
+  assert.equal(applied.adversarial_positions[0].coherence_note, "Preserved coherence note");
   assert.deepEqual(applied.adversarial_positions[0].dimension_values, report.adversarial_positions[0].dimension_values);
   assert.deepEqual(applied.adversarial_positions[0].sampling_coordinates, report.adversarial_positions[0].sampling_coordinates);
   assert.equal(applied.sampling_method, "halton");

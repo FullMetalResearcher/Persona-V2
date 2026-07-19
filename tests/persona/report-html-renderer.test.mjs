@@ -34,8 +34,28 @@ test("renders valid HTTP and HTTPS evidence links", async () => {
     { ...golden.evidence[1], id: "E02", url: "https://example.com/b?q=1" },
   ];
   const html = renderReportHtml(golden);
-  assert.match(html, /href="http:\/\/example\.com\/a" rel="noopener noreferrer"/);
-  assert.match(html, /href="https:\/\/example\.com\/b\?q=1" rel="noopener noreferrer"/);
+  assert.match(html, /href="http:\/\/example\.com\/a" target="_blank" rel="noopener noreferrer"/);
+  assert.match(html, /href="https:\/\/example\.com\/b\?q=1" target="_blank" rel="noopener noreferrer"/);
+});
+
+test("renders accuracy fields: access dates, quotes, notes, and action rationale", async () => {
+  const report = await loadGoldenReport();
+  report.evidence[0].url = "https://example.com/a";
+  report.evidence[0].accessed_at = "2026-07-19";
+
+  const html = renderReportHtml(report);
+  assert.match(html, /accessed 2026-07-19/);
+  assert.ok(html.includes(`“${report.evidence[2].quote}”`));
+  assert.match(html, /Evidence base: 2 builder-supplied items, 1 behavior observation, 1 first-person account\./);
+  assert.ok(html.includes(`Note: ${report.adversarial_positions[7].coherence_note}`));
+  assert.ok(html.includes(`Why this segment:</strong> ${report.next_action.segment_rationale}`));
+  assert.ok(html.includes(`Recruiting channel:</strong> ${report.next_action.recruiting_channel}`));
+  assert.match(html, /\.decision-band\.test-first/);
+  assert.doesNotMatch(html, /Why this is not Do not build:/);
+
+  report.recommendation.contradiction_note = "Contradicted only as scoped; a narrower wedge remains.";
+  const withNote = renderReportHtml(report);
+  assert.ok(withNote.includes("Why this is not Do not build:</strong> Contradicted only as scoped; a narrower wedge remains."));
 });
 
 test("renders the tldr first with a shareable verdict", async () => {
@@ -64,7 +84,7 @@ test("escapes every user and model-controlled rendered field category", async ()
   for (const field of ["target_user", "use_case", "current_alternative", "price"]) report.input[field] = payload;
 
   const evidence = report.evidence[0];
-  for (const field of ["id", "source", "observation", "implication", "type", "strength"]) evidence[field] = payload;
+  for (const field of ["id", "source", "observation", "implication", "type", "strength", "accessed_at", "quote"]) evidence[field] = payload;
   evidence.url = "javascript:<script>alert(1)</script>";
 
   const dimension = report.adversarial_dimensions[0];
@@ -73,7 +93,7 @@ test("escapes every user and model-controlled rendered field category", async ()
   dimension.buckets[0] = payload;
 
   const position = report.adversarial_positions[0];
-  for (const field of ["id", "label", "stance", "objection", "proof_trigger"]) position[field] = payload;
+  for (const field of ["id", "label", "stance", "objection", "proof_trigger", "coherence_note"]) position[field] = payload;
   position.dimension_values = { [payload]: payload };
   position.evidence_ids = [payload];
 
@@ -87,11 +107,11 @@ test("escapes every user and model-controlled rendered field category", async ()
   hardNo.position_ids = [payload];
 
   const recommendation = report.recommendation;
-  for (const field of ["verdict", "confidence", "decisive_reason"]) recommendation[field] = payload;
+  for (const field of ["verdict", "confidence", "decisive_reason", "contradiction_note"]) recommendation[field] = payload;
   recommendation.evidence_limits = [payload];
   recommendation.reversal_evidence = [payload];
   report.mistakes_to_avoid = [payload];
-  for (const field of ["action", "why_now", "success_threshold", "kill_threshold"]) report.next_action[field] = payload;
+  for (const field of ["action", "why_now", "success_threshold", "kill_threshold", "segment_rationale", "recruiting_channel"]) report.next_action[field] = payload;
 
   const html = renderReportHtml(report);
   assert.doesNotMatch(html, /<script\b|data-pwned="|alert\('x'\)/i);

@@ -26,6 +26,7 @@ test("accepts valid reports in all grounding modes", async () => {
   webGrounded.grounding_mode = "web-grounded";
   webGrounded.evidence.forEach((item, index) => {
     item.url = `https://example.com/evidence-${index + 1}`;
+    item.accessed_at = "2026-07-12";
   });
   assertValid(webGrounded, "web-grounded");
 
@@ -44,6 +45,65 @@ test("requires a plain-language tldr", async () => {
     report.tldr = `This ${jargon} analysis recommends Build.`;
     assertInvalid(report, /tldr must use plain language without method jargon/);
   }
+});
+
+test("rejects a tldr that repeats the decisive reason verbatim", async () => {
+  const golden = await loadGoldenReport();
+  const report = structuredClone(golden);
+  report.tldr = `Persona evaluated the idea.  ${report.recommendation.decisive_reason.toUpperCase()} Start with one customer.`;
+  assertInvalid(report, /tldr must paraphrase recommendation\.decisive_reason/);
+});
+
+test("enforces evidence access dates and quote limits", async () => {
+  const golden = await loadGoldenReport();
+
+  const badDate = structuredClone(golden);
+  badDate.evidence[0].accessed_at = "2026-13-01";
+  assertInvalid(badDate, /evidence\[0\]\.accessed_at must be a real calendar date/);
+
+  const webGrounded = structuredClone(golden);
+  webGrounded.grounding_mode = "web-grounded";
+  webGrounded.evidence.forEach((item, index) => {
+    item.url = `https://example.com/evidence-${index + 1}`;
+    item.accessed_at = "2026-07-12";
+  });
+  webGrounded.evidence[1].accessed_at = "";
+  assertInvalid(webGrounded, /evidence\[1\]\.accessed_at is required for web-grounded evidence/);
+
+  const longQuote = structuredClone(golden);
+  longQuote.evidence[0].quote = "x".repeat(201);
+  assertInvalid(longQuote, /evidence\[0\]\.quote must be at most 200 characters/);
+});
+
+test("enforces the high-confidence behavioral evidence gate", async () => {
+  const golden = await loadGoldenReport();
+  const high = structuredClone(golden);
+  high.recommendation.confidence = "high";
+  assertValid(high, "two distinct behavioral items support high confidence");
+
+  high.evidence[1].type = "user-provided";
+  assertInvalid(high, /high confidence requires at least 2 distinct buyer-language or current-behavior/);
+});
+
+test("enforces the contradiction bridge note in both directions", async () => {
+  const golden = await loadGoldenReport();
+
+  const contradicted = structuredClone(golden);
+  contradicted.decision_factors[4].status = "contradicted";
+  assertInvalid(contradicted, /contradiction_note must explain why a contradicted factor/);
+
+  contradicted.recommendation.contradiction_note =
+    "The factor is contradicted only as currently scoped; a narrower wedge remains testable.";
+  assertValid(contradicted, "note bridges the contradicted factor");
+
+  const doNotBuild = structuredClone(golden);
+  doNotBuild.recommendation.verdict = "Do not build";
+  doNotBuild.decision_factors[4].status = "contradicted";
+  assertValid(doNotBuild, "Do not build needs no bridge note");
+
+  const stray = structuredClone(golden);
+  stray.recommendation.contradiction_note = "No contradiction exists.";
+  assertInvalid(stray, /contradiction_note must be empty when no decision factor is contradicted/);
 });
 
 test("rejects invalid and unsafe input and evidence URLs", async () => {
@@ -251,6 +311,9 @@ test("rejects incomplete, active, external, obsolete, and mismatched HTML", asyn
     [html.replace("</style>", "@import url(https://example.com/x.css);</style>"), /must not import remote CSS/],
     [html.replace("</body>", "<p>12 / 12</p></body>"), /must not present sampled positions as a vote tally/],
     [html.replace("</body>", "<p>WOULD_PAY</p></body>"), /contains obsolete persona or purchase-verdict language/],
+    [html.replace("Why this segment:", "Segment:"), /must include the segment rationale line/],
+    [html.replace("Recruiting channel:", "Channel:"), /must include the recruiting channel line/],
+    [html.replace("Evidence base:", "Evidence mix:"), /must include the evidence-mix summary/],
   ];
 
   for (const [candidate, expectedError] of unsafeVariants) {

@@ -95,6 +95,16 @@ hypotheses.
 For every evidence item, distinguish the observation from Persona's implication.
 Use sequential IDs `E01`, `E02`, and so on. Follow the bundled schema.
 
+Record `accessed_at` (the date the source was read) for every item with a URL.
+For `buyer-language` items, also record a short verbatim `quote` of at most 25
+words so the claim stays checkable when the source is gated or changes later.
+
+One first-person anecdote is not a behavior base. Before using `medium` or
+`high` confidence, collect at least two independent `buyer-language` or
+`current-behavior` items that support the decisive conclusion. If only one
+first-person source exists, name it explicitly in `evidence_limits` and drop
+confidence unless an independent aggregate behavior source corroborates it.
+
 ### 4. Derive Adversarial Dimensions
 
 Create exactly six dimensions for this specific domain. Each dimension must:
@@ -137,6 +147,11 @@ biographies, names, demographic decoration, theatrical voices, and generic lines
 such as "the market is crowded." An objection fails if it can be pasted into an
 unrelated report unchanged.
 
+Independent sampling can pair buckets that rarely co-occur in reality. When a
+sampled combination is implausible, acknowledge the tension in `coherence_note`
+and reason from the nearest coherent reading; otherwise leave it empty. Never
+hand-edit the sampled values themselves.
+
 Run the sampler with `--apply` again after enriching positions. It preserves the
 analysis fields while restoring deterministic sampled values.
 
@@ -162,17 +177,25 @@ Then apply these rules:
   or an evidence-backed fatal `Hard No`. Competition or missing proof alone is
   insufficient.
 
+If any decision factor is `contradicted` and the verdict is not `Do not build`,
+write `contradiction_note` explaining why the contradiction is not decisive —
+for example, contradicted as currently scoped, with a narrower wedge available.
+Leave it empty when no factor is contradicted.
+
 Set confidence separately:
 
-- `low`: ungrounded, adjacent evidence, or major unknowns
-- `medium`: several relevant sources or credible supplied facts agree
+- `low`: ungrounded, adjacent evidence, a single first-person source, or major
+  unknowns
+- `medium`: several relevant sources agree, including at least two independent
+  `buyer-language` or `current-behavior` items
 - `high`: direct behavior evidence and independent sources support the decisive
   conclusion
 
 After deciding the verdict, write `tldr` in the report language as 2-4 plain
 sentences. State what was evaluated, the verdict, the decisive reason, and the
 immediate next step. Do not use method jargon such as "Halton", "adversarial",
-"counterposition", or "grounded".
+"counterposition", or "grounded". Paraphrase the decisive reason; do not copy
+`decisive_reason` into the `tldr` verbatim.
 
 State at least one evidence limit and one item of reversal evidence. Add 3-5
 idea-specific mistakes to avoid if the builder proceeds anyway.
@@ -183,8 +206,18 @@ End the report with `next_action`:
 
 - `action`: one task that can begin this week
 - `why_now`: the assumption it resolves
+- `segment_rationale`: why this segment, price, and currency — cite evidence
+  IDs, or label each choice explicitly as an assumption the test will check
+- `recruiting_channel`: where the participants come from, so reachability is
+  tested by the same action
 - `success_threshold`: an observable result chosen before the test
 - `kill_threshold`: the result that should stop or materially redirect the idea
+
+Never invent a niche silently: if the action targets a segment that does not
+appear in the input or evidence, `segment_rationale` must say so. Success and
+kill thresholds must partition outcomes; end `kill_threshold` with the rule for
+results that land between the two, such as "anything in between: revise the
+wedge and rerun".
 
 For `Build`, make this the narrowest implementation or paid-pilot action. For
 `Test first`, test the decisive uncertainty without a full product. For `Do not

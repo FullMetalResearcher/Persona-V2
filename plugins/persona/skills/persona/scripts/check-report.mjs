@@ -24,14 +24,17 @@ const TLDR_JARGON_PATTERN = /halton|adversarial|counterposition|grounded/i;
 
 export const OBJECT_FIELDS = {
   input: ["idea", "target_user", "use_case", "current_alternative", "price", "links", "user_evidence"],
-  evidence: ["id", "source", "url", "observation", "type", "strength", "implication"],
+  evidence: ["id", "source", "url", "observation", "type", "strength", "implication", "accessed_at", "quote"],
   dimension: ["name", "rationale", "buckets"],
-  position: ["id", "label", "dimension_values", "sampling_coordinates", "stance", "objection", "proof_trigger", "evidence_ids"],
+  position: ["id", "label", "dimension_values", "sampling_coordinates", "stance", "objection", "proof_trigger", "evidence_ids", "coherence_note"],
   decisionFactor: ["name", "status", "reason", "evidence_ids"],
   hardNo: ["title", "objection", "why_it_matters", "evidence_ids", "position_ids", "severity", "response"],
-  recommendation: ["verdict", "confidence", "decisive_reason", "evidence_limits", "reversal_evidence"],
-  nextAction: ["action", "why_now", "success_threshold", "kill_threshold"],
+  recommendation: ["verdict", "confidence", "decisive_reason", "evidence_limits", "reversal_evidence", "contradiction_note"],
+  nextAction: ["action", "why_now", "success_threshold", "kill_threshold", "segment_rationale", "recruiting_channel"],
 };
+
+export const BEHAVIOR_EVIDENCE_TYPES = ["buyer-language", "current-behavior"];
+const MAX_QUOTE_LENGTH = 200;
 
 export const REQUIRED_TOP_LEVEL = [
   "title",
@@ -225,6 +228,17 @@ export function validateReportObject(report) {
       });
       if (!validateHttpUrl(item.url, { allowEmpty: true })) errors.push(`${label}.url must be an absolute HTTP(S) URL or empty`);
       if (report.grounding_mode === "web-grounded" && !item.url) errors.push(`${label}.url is required for web-grounded evidence`);
+      if (item.accessed_at !== "" && !validateCalendarDate(item.accessed_at)) {
+        errors.push(`${label}.accessed_at must be a real calendar date in YYYY-MM-DD format or empty`);
+      }
+      if (report.grounding_mode === "web-grounded" && item.url && !item.accessed_at) {
+        errors.push(`${label}.accessed_at is required for web-grounded evidence with a URL`);
+      }
+      if (typeof item.quote !== "string") {
+        errors.push(`${label}.quote must be a string`);
+      } else if (item.quote.length > MAX_QUOTE_LENGTH) {
+        errors.push(`${label}.quote must be at most ${MAX_QUOTE_LENGTH} characters`);
+      }
       if (!EVIDENCE_TYPES.includes(item.type)) errors.push(`${label}.type must be one of: ${EVIDENCE_TYPES.join(", ")}`);
       if (!EVIDENCE_STRENGTHS.includes(item.strength)) errors.push(`${label}.strength must be one of: ${EVIDENCE_STRENGTHS.join(", ")}`);
     });
@@ -270,6 +284,7 @@ export function validateReportObject(report) {
       if (!STANCES.includes(position.stance)) errors.push(`${position.id}.stance must be one of: ${STANCES.join(", ")}`);
       if (!nonEmptyString(position.objection)) errors.push(`${position.id}.objection must be a non-empty string`);
       if (!nonEmptyString(position.proof_trigger)) errors.push(`${position.id}.proof_trigger must be a non-empty string`);
+      if (typeof position.coherence_note !== "string") errors.push(`${position.id}.coherence_note must be a string`);
 
       if (nonEmptyString(position.objection)) {
         const normalized = position.objection.trim().toLowerCase();
@@ -348,6 +363,38 @@ export function validateReportObject(report) {
     if (report.grounding_mode === "ungrounded" && report.recommendation.confidence !== "low") {
       errors.push('ungrounded reports must use recommendation.confidence "low"');
     }
+    if (typeof report.recommendation.contradiction_note !== "string") {
+      errors.push("recommendation.contradiction_note must be a string");
+    } else {
+      const hasContradictedFactor = Array.isArray(report.decision_factors)
+        && report.decision_factors.some((factor) => factor?.status === "contradicted");
+      if (
+        hasContradictedFactor
+        && report.recommendation.verdict !== "Do not build"
+        && !nonEmptyString(report.recommendation.contradiction_note)
+      ) {
+        errors.push("recommendation.contradiction_note must explain why a contradicted factor does not force Do not build");
+      }
+      if (!hasContradictedFactor && nonEmptyString(report.recommendation.contradiction_note)) {
+        errors.push("recommendation.contradiction_note must be empty when no decision factor is contradicted");
+      }
+    }
+    if (report.recommendation.confidence === "high") {
+      const behaviorSources = new Set(
+        (Array.isArray(report.evidence) ? report.evidence : [])
+          .filter((item) => BEHAVIOR_EVIDENCE_TYPES.includes(item?.type))
+          .map((item) => item.id),
+      );
+      if (behaviorSources.size < 2) {
+        errors.push("high confidence requires at least 2 distinct buyer-language or current-behavior evidence items");
+      }
+    }
+    if (nonEmptyString(report.tldr) && nonEmptyString(report.recommendation.decisive_reason)) {
+      const normalize = (value) => value.toLowerCase().replace(/\s+/g, " ").trim();
+      if (normalize(report.tldr).includes(normalize(report.recommendation.decisive_reason))) {
+        errors.push("tldr must paraphrase recommendation.decisive_reason instead of repeating it verbatim");
+      }
+    }
     if (report.recommendation.verdict === "Do not build") {
       const hasFatal = Array.isArray(report.hard_nos) && report.hard_nos.some((item) => item?.severity === "fatal");
       const hasContradiction = Array.isArray(report.decision_factors) && report.decision_factors.some((item) => item?.status === "contradicted");
@@ -366,7 +413,7 @@ export function validateReportObject(report) {
   validateStringArray(report.mistakes_to_avoid, "mistakes_to_avoid", errors, { min: 3, max: 5 });
 
   if (validateObjectShape(report.next_action, "next_action", OBJECT_FIELDS.nextAction, errors)) {
-    ["action", "why_now", "success_threshold", "kill_threshold"].forEach((field) => {
+    OBJECT_FIELDS.nextAction.forEach((field) => {
       if (!nonEmptyString(report.next_action[field])) errors.push(`next_action.${field} must be a non-empty string`);
     });
   }
@@ -408,6 +455,12 @@ export function validateHtml(html, report, jsonPath = null, htmlPath = null) {
   (report.adversarial_positions || []).forEach((position) => {
     if (!html.includes(position.id)) errors.push(`HTML must include adversarial position ${position.id}`);
   });
+
+  if (!html.includes("Why this segment:")) errors.push("HTML must include the segment rationale line");
+  if (!html.includes("Recruiting channel:")) errors.push("HTML must include the recruiting channel line");
+  if ((report.evidence || []).length > 0 && !html.includes("Evidence base:")) {
+    errors.push("HTML must include the evidence-mix summary");
+  }
 
   const hasSourceUrls = (report.evidence || []).some((item) => item.url);
   if (hasSourceUrls && !html.includes('rel="noopener noreferrer"')) errors.push("HTML source links must use rel=\"noopener noreferrer\"");

@@ -28,8 +28,10 @@ function renderList(items) {
 
 function renderEvidenceReference(item) {
   const safeUrl = normalizeHttpUrl(item.url);
-  if (!safeUrl) return escapeHtml(item.source);
-  return `<a href="${escapeHtml(safeUrl)}" rel="noopener noreferrer">${escapeHtml(item.source)}</a>`;
+  const source = escapeHtml(item.source);
+  const accessed = item.accessed_at ? `<br><span class="quiet">accessed ${escapeHtml(item.accessed_at)}</span>` : "";
+  if (!safeUrl) return `${source}${accessed}`;
+  return `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${source}</a>${accessed}`;
 }
 
 function renderEvidenceRows(evidence) {
@@ -37,12 +39,35 @@ function renderEvidenceRows(evidence) {
     .map(
       (item) => `<tr>
         <td><code>${escapeHtml(item.id)}</code><br><span class="quiet">${escapeHtml(item.type)} · ${escapeHtml(item.strength)}</span></td>
-        <td>${escapeHtml(item.observation)}</td>
+        <td>${escapeHtml(item.observation)}${item.quote ? `<br><span class="quiet evidence-quote">“${escapeHtml(item.quote)}”</span>` : ""}</td>
         <td>${escapeHtml(item.implication)}</td>
         <td>${renderEvidenceReference(item)}</td>
       </tr>`,
     )
     .join("\n");
+}
+
+const EVIDENCE_MIX_LABELS = {
+  "buyer-language": ["first-person account", "first-person accounts"],
+  "current-behavior": ["behavior observation", "behavior observations"],
+  alternative: ["alternative-product page", "alternative-product pages"],
+  "switching-barrier": ["switching-barrier source", "switching-barrier sources"],
+  regulation: ["regulatory source", "regulatory sources"],
+  pricing: ["pricing source", "pricing sources"],
+  "user-provided": ["builder-supplied item", "builder-supplied items"],
+};
+
+function renderEvidenceMix(evidence) {
+  const counts = new Map();
+  (evidence || []).forEach((item) => {
+    counts.set(item.type, (counts.get(item.type) || 0) + 1);
+  });
+  const parts = [...counts.entries()].map(([type, count]) => {
+    const [singular, plural] = EVIDENCE_MIX_LABELS[type] || [type, type];
+    return `${count} ${count === 1 ? singular : plural}`;
+  });
+  if (parts.length === 0) return "";
+  return `<p class="quiet">Evidence base: ${escapeHtml(parts.join(", "))}.</p>`;
 }
 
 function renderFactorRows(factors) {
@@ -94,7 +119,7 @@ function renderPositionRows(positions) {
     .map(
       (position) => `<tr>
         <td><code>${escapeHtml(position.id)}</code><br><strong>${escapeHtml(position.label)}</strong></td>
-        <td class="position-values">${renderPositionValues(position)}</td>
+        <td class="position-values">${renderPositionValues(position)}${position.coherence_note ? `<br><span class="coherence-note">Note: ${escapeHtml(position.coherence_note)}</span>` : ""}</td>
         <td><span class="stance stance-${escapeHtml(position.stance)}">${escapeHtml(position.stance)}</span><br>${escapeHtml(position.objection)}</td>
         <td>${escapeHtml(position.proof_trigger)}<br><span class="refs">${escapeHtml((position.evidence_ids || []).join(", ") || "hypothesis")}</span></td>
       </tr>`,
@@ -181,7 +206,11 @@ export function renderReportHtml(report) {
     .facts dd { margin: 2px 0 0; }
     .decision-band { border-left: 5px solid var(--amber); background: var(--amber-soft); padding: 22px 24px; }
     .decision-band.build { border-color: var(--green); background: var(--green-soft); }
+    .decision-band.test-first { border-color: var(--amber); background: var(--amber-soft); }
     .decision-band.do-not-build { border-color: var(--red); background: var(--red-soft); }
+    .contradiction-note { margin: 10px 0 12px; }
+    .evidence-quote, .coherence-note { font-style: italic; }
+    .coherence-note { display: inline-block; margin-top: 6px; }
     .verdict { display: block; margin-bottom: 5px; font-size: 28px; font-weight: 760; }
     .confidence { color: var(--muted); font-size: 14px; }
     .table-wrap { width: 100%; overflow-x: auto; }
@@ -266,7 +295,8 @@ export function renderReportHtml(report) {
       <h2>Decision</h2>
       <div class="decision-band ${verdictClass(recommendation.verdict)}">
         <span class="verdict">${escapeHtml(recommendation.verdict)}</span>
-        <p>${escapeHtml(recommendation.decisive_reason)}</p>
+        <p>${escapeHtml(recommendation.decisive_reason)}</p>${recommendation.contradiction_note ? `
+        <p class="quiet contradiction-note"><strong>Why this is not Do not build:</strong> ${escapeHtml(recommendation.contradiction_note)}</p>` : ""}
         <span class="confidence">Confidence: ${escapeHtml(recommendation.confidence)} · confidence describes the evidence, not startup success.</span>
       </div>
       <div class="table-wrap">
@@ -284,7 +314,7 @@ export function renderReportHtml(report) {
 
     <section id="evidence-and-limits">
       <h2>Evidence and Limits</h2>
-      ${evidenceRows ? `<div class="table-wrap"><table><thead><tr><th>ID</th><th>Observation</th><th>Implication</th><th>Source</th></tr></thead><tbody>${evidenceRows}</tbody></table></div>` : "<p>No external evidence was available. Treat every objection as a hypothesis.</p>"}
+      ${evidenceRows ? `${renderEvidenceMix(report.evidence)}<div class="table-wrap"><table><thead><tr><th>ID</th><th>Observation</th><th>Implication</th><th>Source</th></tr></thead><tbody>${evidenceRows}</tbody></table></div>` : "<p>No external evidence was available. Treat every objection as a hypothesis.</p>"}
       <h3>Limits</h3>
       ${renderList(recommendation.evidence_limits)}
     </section>
@@ -315,6 +345,8 @@ export function renderReportHtml(report) {
       <h2>Do This Now</h2>
       <p><strong>Action:</strong> ${escapeHtml(nextAction.action)}</p>
       <p><strong>Why now:</strong> ${escapeHtml(nextAction.why_now)}</p>
+      <p><strong>Why this segment:</strong> ${escapeHtml(nextAction.segment_rationale)}</p>
+      <p><strong>Recruiting channel:</strong> ${escapeHtml(nextAction.recruiting_channel)}</p>
       <div class="thresholds">
         <div><strong>Success threshold</strong>${escapeHtml(nextAction.success_threshold)}</div>
         <div><strong>Kill threshold</strong>${escapeHtml(nextAction.kill_threshold)}</div>

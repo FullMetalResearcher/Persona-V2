@@ -110,7 +110,7 @@
     "evidence": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "source", "url", "observation", "type", "strength", "implication"],
+      "required": ["id", "source", "url", "observation", "type", "strength", "implication", "accessed_at", "quote"],
       "properties": {
         "id": { "type": "string", "pattern": "^E[0-9]{2}$" },
         "source": { "type": "string", "minLength": 1 },
@@ -120,6 +120,13 @@
             { "$ref": "#/$defs/httpUrl" }
           ]
         },
+        "accessed_at": {
+          "oneOf": [
+            { "const": "" },
+            { "type": "string", "format": "date" }
+          ]
+        },
+        "quote": { "type": "string", "maxLength": 200 },
         "observation": { "type": "string", "minLength": 1 },
         "type": {
           "enum": [
@@ -163,7 +170,8 @@
         "stance",
         "objection",
         "proof_trigger",
-        "evidence_ids"
+        "evidence_ids",
+        "coherence_note"
       ],
       "properties": {
         "id": { "$ref": "#/$defs/positionId" },
@@ -179,7 +187,8 @@
         "stance": { "enum": ["reject", "conditional", "support"] },
         "objection": { "type": "string", "minLength": 1 },
         "proof_trigger": { "type": "string", "minLength": 1 },
-        "evidence_ids": { "$ref": "#/$defs/stringArray" }
+        "evidence_ids": { "$ref": "#/$defs/stringArray" },
+        "coherence_note": { "type": "string" }
       }
     },
     "decisionFactor": {
@@ -215,11 +224,12 @@
     "recommendation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["verdict", "confidence", "decisive_reason", "evidence_limits", "reversal_evidence"],
+      "required": ["verdict", "confidence", "decisive_reason", "evidence_limits", "reversal_evidence", "contradiction_note"],
       "properties": {
         "verdict": { "enum": ["Build", "Test first", "Do not build"] },
         "confidence": { "enum": ["low", "medium", "high"] },
         "decisive_reason": { "type": "string", "minLength": 1 },
+        "contradiction_note": { "type": "string" },
         "evidence_limits": {
           "type": "array",
           "minItems": 1,
@@ -239,12 +249,14 @@
     "nextAction": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["action", "why_now", "success_threshold", "kill_threshold"],
+      "required": ["action", "why_now", "success_threshold", "kill_threshold", "segment_rationale", "recruiting_channel"],
       "properties": {
         "action": { "type": "string", "minLength": 1 },
         "why_now": { "type": "string", "minLength": 1 },
         "success_threshold": { "type": "string", "minLength": 1 },
-        "kill_threshold": { "type": "string", "minLength": 1 }
+        "kill_threshold": { "type": "string", "minLength": 1 },
+        "segment_rationale": { "type": "string", "minLength": 1 },
+        "recruiting_channel": { "type": "string", "minLength": 1 }
       }
     }
   },
@@ -258,7 +270,12 @@
             "items": {
               "allOf": [
                 { "$ref": "#/$defs/evidence" },
-                { "properties": { "url": { "type": "string", "minLength": 1 } } }
+                {
+                  "properties": {
+                    "url": { "type": "string", "minLength": 1 },
+                    "accessed_at": { "type": "string", "minLength": 1 }
+                  }
+                }
               ]
             }
           }
