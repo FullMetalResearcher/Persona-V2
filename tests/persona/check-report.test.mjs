@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { validateHtml, validateReportObject } from "../../plugins/persona/skills/persona/scripts/check-report.mjs";
-import { renderReportHtml } from "../../plugins/persona/skills/persona/scripts/report-html-renderer.mjs";
+import { validateMarkdown, validateReportObject } from "../../plugins/persona/skills/persona/scripts/check-report.mjs";
+import { renderReportMarkdown } from "../../plugins/persona/skills/persona/scripts/report-markdown-renderer.mjs";
 import { UNSAFE_URLS, loadGoldenReport, makeUngrounded } from "./test-helpers.mjs";
 
 function assertValid(report, message = "report should be valid") {
@@ -283,45 +283,50 @@ test("enforces the Do not build structural-failure gate", async () => {
   assertValid(report);
 });
 
-test("accepts the bundled renderer output as safe and complete HTML", async () => {
+test("accepts the bundled renderer output as safe and complete Markdown", async () => {
   const report = await loadGoldenReport();
-  const html = renderReportHtml(report);
-  const result = validateHtml(
-    html,
+  report.evidence[0].url = "https://example.com/evidence(a)";
+  report.evidence[0].accessed_at = "2026-07-19";
+  const markdown = renderReportMarkdown(report);
+  const result = validateMarkdown(
+    markdown,
     report,
     "reports/example-2026-07-12.json",
-    "reports/example-2026-07-12.html",
+    "reports/example-2026-07-12.md",
   );
 
   assert.deepEqual(result.errors, []);
 });
 
-test("rejects incomplete, active, external, obsolete, and mismatched HTML", async () => {
+test("rejects incomplete, injected, corrupted, obsolete, and mismatched Markdown", async () => {
   const report = await loadGoldenReport();
-  const html = renderReportHtml(report);
+  const markdown = renderReportMarkdown(report);
+  const reordered = markdown
+    .replace("## Product Snapshot", "## Temporary Section")
+    .replace("## Decision", "## Product Snapshot")
+    .replace("## Temporary Section", "## Decision");
   const unsafeVariants = [
-    [html.replace("<!doctype html>", ""), /must start with <!doctype html>/],
-    [html.replace('id="tldr"', 'id="removed-tldr"'), /missing section id: tldr/],
-    [html.replace('class="share-snippet"', 'class="removed-share-snippet"'), /must include a shareable verdict snippet/],
-    [html.replace("Verdict: Build (medium confidence)", "Verdict: Test first (low confidence)"), /must include the report verdict and confidence/],
-    [html.replace('id="hard-nos"', 'id="removed-hard-nos"'), /missing section id: hard-nos/],
-    [html.replace("</body>", "<script>alert(1)</script></body>"), /must not include JavaScript/],
-    [html.replace("</head>", '<link rel="stylesheet" href="https://example.com/x.css"></head>'), /must not include external link tags/],
-    [html.replace("</body>", '<img src="https://example.com/x.png"></body>'), /must not include external assets/],
-    [html.replace("</style>", "@import url(https://example.com/x.css);</style>"), /must not import remote CSS/],
-    [html.replace("</body>", "<p>12 / 12</p></body>"), /must not present sampled positions as a vote tally/],
-    [html.replace("</body>", "<p>WOULD_PAY</p></body>"), /contains obsolete persona or purchase-verdict language/],
-    [html.replace("Why this segment:", "Segment:"), /must include the segment rationale line/],
-    [html.replace("Recruiting channel:", "Channel:"), /must include the recruiting channel line/],
-    [html.replace("Evidence base:", "Evidence mix:"), /must include the evidence-mix summary/],
+    [markdown.replace("## TL;DR", "### TL;DR"), /missing section heading: ## TL;DR/],
+    [reordered, /section is out of order/],
+    [markdown.replace("```text", "~~~text"), /must include a fenced shareable verdict snippet/],
+    [markdown.replace("Verdict: Build (medium confidence)", "Verdict: Test first (low confidence)"), /must include the report verdict and confidence/],
+    [markdown.replace("Next:", "Later:"), /must include a next-action line/],
+    [`${markdown}<script>alert(1)</script>\n`, /must not include raw HTML/],
+    [markdown.replace(report.decision_factors[0].name, `${report.decision_factors[0].name} | injected`), /table row .* delimiters; expected/],
+    [markdown.replaceAll("A12", "B12"), /must include adversarial position A12/],
+    [`${markdown}12 / 12\n`, /must not present sampled positions as a vote tally/],
+    [`${markdown}WOULD\\_PAY\n`, /contains obsolete persona or purchase-verdict language/],
+    [markdown.replace("Why this segment:", "Segment:"), /must include the segment rationale line/],
+    [markdown.replace("Recruiting channel:", "Channel:"), /must include the recruiting channel line/],
+    [markdown.replace("Evidence base:", "Evidence mix:"), /must include the evidence-mix summary/],
   ];
 
   for (const [candidate, expectedError] of unsafeVariants) {
-    assert.match(validateHtml(candidate, report).errors.join("\n"), expectedError);
+    assert.match(validateMarkdown(candidate, report).errors.join("\n"), expectedError);
   }
 
   assert.match(
-    validateHtml(html, report, "reports/one.json", "reports/two.html").errors.join("\n"),
+    validateMarkdown(markdown, report, "reports/one.json", "reports/two.md").errors.join("\n"),
     /filenames must use the same slug\/date suffix/,
   );
 });
