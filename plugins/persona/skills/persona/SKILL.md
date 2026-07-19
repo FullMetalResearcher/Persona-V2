@@ -1,6 +1,6 @@
 ---
 name: persona
-description: Pressure-test a startup, product, SaaS, marketplace, or side-project idea before building it. Use when a builder asks whether an idea is worth building, wants brutally specific objections, requests idea validation or a go/no-go recommendation, or asks for a Persona decision report. Produces grounded local JSON and HTML artifacts with adversarial Halton coverage and a Build, Test first, or Do not build verdict.
+description: Pressure-test a startup, product, SaaS, marketplace, or side-project idea before building it. Use when a builder asks whether an idea is worth building, wants brutally specific objections, requests idea validation or a go/no-go recommendation, or asks for a Persona decision report. Produces grounded local JSON and Markdown artifacts with adversarial Halton coverage and a Build, Test first, or Do not build verdict.
 ---
 
 # Persona
@@ -22,7 +22,7 @@ Create matching artifacts:
 
 ```text
 reports/<english-slug>-YYYY-MM-DD.json
-reports/<english-slug>-YYYY-MM-DD.html
+reports/<english-slug>-YYYY-MM-DD.md
 ```
 
 If the pair exists, append `-2`, `-3`, and so on. Detect the report language from
@@ -37,7 +37,7 @@ the user's input. Keep these product terms in English in every language:
 - `Test first`
 - `Do not build`
 
-The structured JSON is the source of truth. Generate HTML mechanically from it.
+The structured JSON is the source of truth. Generate Markdown mechanically from it.
 Do not continue into coaching, implementation, or a second artifact unless the
 user separately asks after receiving the report.
 
@@ -248,19 +248,19 @@ Before rendering, confirm:
 Run the bundled scripts from the skill directory:
 
 ```bash
-node <persona-skill-dir>/scripts/report-html-renderer.mjs \
+node <persona-skill-dir>/scripts/report-markdown-renderer.mjs \
   reports/<english-slug>-YYYY-MM-DD.json \
-  reports/<english-slug>-YYYY-MM-DD.html
+  reports/<english-slug>-YYYY-MM-DD.md
 
 node <persona-skill-dir>/scripts/check-report.mjs \
   reports/<english-slug>-YYYY-MM-DD.json \
-  reports/<english-slug>-YYYY-MM-DD.html
+  reports/<english-slug>-YYYY-MM-DD.md
 ```
 
-Fix every validation error. Do not hand-write an alternate HTML report when the
+Fix every validation error. Do not hand-write an alternate Markdown report when the
 renderer fails; fix the structured object or bundled tool path.
 
-The HTML sections must appear in this order:
+The Markdown sections must appear in this order:
 
 1. TL;DR
 2. Product Snapshot
@@ -278,7 +278,7 @@ Tell the user:
 
 - the recommendation and confidence
 - the decisive reason in one sentence
-- the JSON and HTML paths
+- the JSON and Markdown paths
 - any material evidence limitation
 - that the report opens with a shareable verdict snippet
 
