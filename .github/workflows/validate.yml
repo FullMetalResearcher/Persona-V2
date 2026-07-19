@@ -56,16 +56,16 @@ jobs:
       - name: Verify deterministic fixture artifacts
         run: |
           json="$RUNNER_TEMP/persona-fixture.json"
-          html="$RUNNER_TEMP/persona-fixture.html"
+          md="$RUNNER_TEMP/persona-fixture.md"
           cp tests/persona/fixtures/generic-report.json "$json"
           node plugins/persona/skills/persona/scripts/halton-sampler.mjs \
             "$json" --apply
-          node plugins/persona/skills/persona/scripts/report-html-renderer.mjs \
-            "$json" "$html"
+          node plugins/persona/skills/persona/scripts/report-markdown-renderer.mjs \
+            "$json" "$md"
           node plugins/persona/skills/persona/scripts/check-report.mjs \
-            "$json" "$html"
+            "$json" "$md"
           cmp tests/persona/fixtures/generic-report.json "$json"
-          cmp tests/persona/fixtures/generic-report.html "$html"
+          cmp tests/persona/fixtures/generic-report.md "$md"
 
       - name: Check repository hygiene
         run: |
