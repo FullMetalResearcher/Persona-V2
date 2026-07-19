@@ -137,9 +137,6 @@ build` remain in English so reports stay structurally consistent.
 Both report files stay under `reports/` in the project where you ran Persona.
 They are not committed or published automatically.
 
-For printing, use the gstack `/make-pdf` skill or any Markdown-to-PDF tool; Persona
-no longer bundles browser print styles.
-
 ### Does everything stay local?
 
 The JSON and Markdown artifacts are generated locally and use no external
