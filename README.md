@@ -41,10 +41,20 @@ scripts.
 
 ### Claude Code
 
-Run these commands inside Claude Code:
+Run these commands inside Claude Code, one at a time.
+
+1. Add the marketplace:
 
 ```text
 /plugin marketplace add FullMetalResearcher/Persona-V2
+```
+
+If Claude Code prompts you for a marketplace source instead of accepting the
+argument, enter only `FullMetalResearcher/Persona-V2` at the prompt.
+
+2. Once the marketplace is added, install the plugin:
+
+```text
 /plugin install persona@persona
 ```
 
