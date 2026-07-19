@@ -1,18 +1,10 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { pathToFileURL } from "node:url";
+import { isObject, nonEmptyString, runCli, sequentialId } from "./lib.mjs";
 
-const PRIME_BASES = [2, 3, 5, 7, 11, 13];
-const SAMPLE_COUNT = 12;
+export const PRIME_BASES = [2, 3, 5, 7, 11, 13];
+export const SAMPLE_COUNT = 12;
 
-function isObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function nonEmptyString(value) {
-  return typeof value === "string" && value.trim().length > 0;
-}
-
-function validateDimensions(dimensions) {
+export function validateDimensions(dimensions) {
   if (!Array.isArray(dimensions) || dimensions.length !== PRIME_BASES.length) {
     throw new Error(`adversarial_dimensions must contain exactly ${PRIME_BASES.length} items`);
   }
@@ -70,7 +62,7 @@ export function sampleAdversarialPositions(dimensions) {
     });
 
     return {
-      id: `A${String(index + 1).padStart(2, "0")}`,
+      id: sequentialId("A", index),
       dimension_values: dimensionValues,
       sampling_coordinates: samplingCoordinates,
     };
@@ -97,31 +89,19 @@ export function applySampling(report) {
   };
 }
 
-async function main() {
-  const [, , inputPath, flag] = process.argv;
+runCli(
+  import.meta.url,
+  "Usage: node halton-sampler.mjs <report.json> [--apply]",
+  async (inputPath, flag) => {
+    const report = JSON.parse(await readFile(inputPath, "utf8"));
+    const sampledReport = applySampling(report);
 
-  if (!inputPath) {
-    console.error("Usage: node halton-sampler.mjs <report.json> [--apply]");
-    process.exit(1);
-  }
+    if (flag === "--apply") {
+      await writeFile(inputPath, `${JSON.stringify(sampledReport, null, 2)}\n`, "utf8");
+      console.log(JSON.stringify({ output: inputPath, positions: SAMPLE_COUNT, sampling_method: "halton" }, null, 2));
+      return;
+    }
 
-  const report = JSON.parse(await readFile(inputPath, "utf8"));
-  const sampledReport = applySampling(report);
-
-  if (flag === "--apply") {
-    await writeFile(inputPath, `${JSON.stringify(sampledReport, null, 2)}\n`, "utf8");
-    console.log(JSON.stringify({ output: inputPath, positions: SAMPLE_COUNT, sampling_method: "halton" }, null, 2));
-    return;
-  }
-
-  console.log(JSON.stringify(sampledReport.adversarial_positions, null, 2));
-}
-
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main().catch((error) => {
-    console.error(error.message || error);
-    process.exit(1);
-  });
-}
-
-export { PRIME_BASES, SAMPLE_COUNT, validateDimensions };
+    console.log(JSON.stringify(sampledReport.adversarial_positions, null, 2));
+  },
+);

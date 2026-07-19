@@ -6,7 +6,7 @@ import {
   sampleAdversarialPositions,
   validateDimensions,
 } from "../../plugins/persona/skills/persona/scripts/halton-sampler.mjs";
-import { clone, loadGoldenReport } from "./test-helpers.mjs";
+import { loadGoldenReport } from "./test-helpers.mjs";
 
 test("sampling is deterministic and produces the audited IDs and coordinates", async () => {
   const report = await loadGoldenReport();
@@ -25,7 +25,7 @@ test("sampling is deterministic and produces the audited IDs and coordinates", a
 
 test("applySampling preserves enriched position fields and repairs sampled fields", async () => {
   const report = await loadGoldenReport();
-  const modified = clone(report);
+  const modified = structuredClone(report);
   modified.adversarial_positions[0].label = "Preserved label";
   modified.adversarial_positions[0].objection = "Preserved objection";
   modified.adversarial_positions[0].dimension_values = { wrong: "value" };
@@ -41,15 +41,15 @@ test("applySampling preserves enriched position fields and repairs sampled field
 
 test("dimension validation rejects malformed and duplicate values", async () => {
   const report = await loadGoldenReport();
-  const duplicateName = clone(report.adversarial_dimensions);
+  const duplicateName = structuredClone(report.adversarial_dimensions);
   duplicateName[1].name = duplicateName[0].name;
   assert.throws(() => validateDimensions(duplicateName), /Duplicate adversarial dimension/);
 
-  const duplicateBucket = clone(report.adversarial_dimensions);
+  const duplicateBucket = structuredClone(report.adversarial_dimensions);
   duplicateBucket[0].buckets[1] = duplicateBucket[0].buckets[0];
   assert.throws(() => validateDimensions(duplicateBucket), /must not contain duplicates/);
 
-  const wrongType = clone(report.adversarial_dimensions);
+  const wrongType = structuredClone(report.adversarial_dimensions);
   wrongType[0].buckets[0] = 42;
   assert.throws(() => validateDimensions(wrongType), /must be a non-empty string/);
 });

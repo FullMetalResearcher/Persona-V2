@@ -3,16 +3,21 @@ import { readFile } from "node:fs/promises";
 const GOLDEN_REPORT_URL = new URL("./fixtures/generic-report.json", import.meta.url);
 const GOLDEN_HTML_URL = new URL("./fixtures/generic-report.html", import.meta.url);
 
+export const UNSAFE_URLS = [
+  "javascript:alert(document.domain)",
+  "data:text/html,<h1>x</h1>",
+  "file:///etc/passwd",
+  " JaVaScRiPt:alert(1)",
+  "java\nscript:alert(1)",
+  "https://example.com/space here",
+];
+
 export async function loadGoldenReport() {
   return JSON.parse(await readFile(GOLDEN_REPORT_URL, "utf8"));
 }
 
 export async function loadGoldenHtml() {
   return readFile(GOLDEN_HTML_URL, "utf8");
-}
-
-export function clone(value) {
-  return structuredClone(value);
 }
 
 export function makeUngrounded(report) {

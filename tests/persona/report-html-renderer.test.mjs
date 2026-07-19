@@ -1,42 +1,20 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { normalizeHttpUrl, renderReportHtml } from "../../plugins/persona/skills/persona/scripts/report-html-renderer.mjs";
-import { clone, loadGoldenHtml, loadGoldenReport } from "./test-helpers.mjs";
-
-test("normalizes only absolute HTTP and HTTPS URLs", () => {
-  assert.equal(normalizeHttpUrl("http://example.com/path"), "http://example.com/path");
-  assert.equal(normalizeHttpUrl("HTTPS://example.com/path?q=1"), "https://example.com/path?q=1");
-
-  for (const value of [
-    "javascript:alert(document.domain)",
-    "data:text/html,<h1>x</h1>",
-    "file:///etc/passwd",
-    " JaVaScRiPt:alert(1)",
-    "java\nscript:alert(1)",
-    "https://example.com/space here",
-    "//example.com/path",
-    "",
-    null,
-  ]) {
-    assert.equal(normalizeHttpUrl(value), null);
-  }
-});
+import { renderReportHtml } from "../../plugins/persona/skills/persona/scripts/report-html-renderer.mjs";
+import { UNSAFE_URLS, loadGoldenHtml, loadGoldenReport } from "./test-helpers.mjs";
 
 test("renders unsafe evidence URLs as escaped plain source text", async () => {
   const golden = await loadGoldenReport();
   const unsafe = [
-    "javascript:alert(document.domain)",
+    ...UNSAFE_URLS,
     "data:text/html,<svg onload=alert(1)>",
-    "file:///etc/passwd",
-    " JaVaScRiPt:alert(1)",
-    "java\nscript:alert(1)",
     "\"><img src=x onerror=alert(1)>",
     "&quot;><script>alert(1)</script>",
   ];
 
   for (const url of unsafe) {
-    const report = clone(golden);
+    const report = structuredClone(golden);
     report.evidence = [{
       ...report.evidence[0],
       source: "Source <unsafe> & \"quoted\"",

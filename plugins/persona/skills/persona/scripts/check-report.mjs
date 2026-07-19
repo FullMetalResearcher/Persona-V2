@@ -1,16 +1,16 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { elapsedMs, isObject, nonEmptyString, normalizeHttpUrl, runCli, sequentialId } from "./lib.mjs";
 import { sampleAdversarialPositions, validateDimensions } from "./halton-sampler.mjs";
 
-const IDEA_TYPES = ["B2B", "B2C", "marketplace/platform"];
-const GROUNDING_MODES = ["web-grounded", "user-provided", "ungrounded"];
-const STANCES = ["reject", "conditional", "support"];
-const FACTOR_STATUSES = ["supported", "uncertain", "contradicted"];
-const SEVERITIES = ["fatal", "major", "manageable"];
-const VERDICTS = ["Build", "Test first", "Do not build"];
-const CONFIDENCE = ["low", "medium", "high"];
-const EVIDENCE_TYPES = [
+export const IDEA_TYPES = ["B2B", "B2C", "marketplace/platform"];
+export const GROUNDING_MODES = ["web-grounded", "user-provided", "ungrounded"];
+export const STANCES = ["reject", "conditional", "support"];
+export const FACTOR_STATUSES = ["supported", "uncertain", "contradicted"];
+export const SEVERITIES = ["fatal", "major", "manageable"];
+export const VERDICTS = ["Build", "Test first", "Do not build"];
+export const CONFIDENCE = ["low", "medium", "high"];
+export const EVIDENCE_TYPES = [
   "buyer-language",
   "current-behavior",
   "alternative",
@@ -19,11 +19,10 @@ const EVIDENCE_TYPES = [
   "pricing",
   "user-provided",
 ];
-const EVIDENCE_STRENGTHS = ["strong", "mixed", "weak"];
-const HTTP_URL_PATTERN = /^https?:\/\/\S+$/i;
+export const EVIDENCE_STRENGTHS = ["strong", "mixed", "weak"];
 const TLDR_JARGON_PATTERN = /halton|adversarial|counterposition|grounded/i;
 
-const OBJECT_FIELDS = {
+export const OBJECT_FIELDS = {
   input: ["idea", "target_user", "use_case", "current_alternative", "price", "links", "user_evidence"],
   evidence: ["id", "source", "url", "observation", "type", "strength", "implication"],
   dimension: ["name", "rationale", "buckets"],
@@ -34,7 +33,7 @@ const OBJECT_FIELDS = {
   nextAction: ["action", "why_now", "success_threshold", "kill_threshold"],
 };
 
-const REQUIRED_TOP_LEVEL = [
+export const REQUIRED_TOP_LEVEL = [
   "title",
   "slug",
   "created_at",
@@ -82,14 +81,6 @@ const LEGACY_DIMENSION_GRIDS = [
   ["consumer archetype", "pain frequency", "willingness to pay", "habit strength", "trust/risk sensitivity", "channel accessibility"],
   ["supply-side motivation", "demand-side urgency", "liquidity difficulty", "trust requirement", "repeat-use likelihood", "switching friction"],
 ];
-
-function isObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function nonEmptyString(value) {
-  return typeof value === "string" && value.trim().length > 0;
-}
 
 function sameItems(a, b) {
   return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((item, index) => item === b[index]);
@@ -150,13 +141,7 @@ function validateReferences(values, knownIds, field, errors, { required = false 
 
 function validateHttpUrl(value, { allowEmpty = false } = {}) {
   if (allowEmpty && value === "") return true;
-  if (typeof value !== "string" || !HTTP_URL_PATTERN.test(value)) return false;
-  try {
-    const url = new URL(value);
-    return (url.protocol === "http:" || url.protocol === "https:") && Boolean(url.hostname);
-  } catch {
-    return false;
-  }
+  return normalizeHttpUrl(value) !== null;
 }
 
 function validateCalendarDate(value) {
@@ -173,9 +158,8 @@ function validateCalendarDate(value) {
 
 export function validateReportObject(report) {
   const errors = [];
-  const warnings = [];
 
-  if (!isObject(report)) return { errors: ["report must be an object"], warnings };
+  if (!isObject(report)) return { errors: ["report must be an object"] };
 
   REQUIRED_TOP_LEVEL.forEach((field) => {
     if (!(field in report)) errors.push(`Missing top-level field: ${field}`);
@@ -232,7 +216,7 @@ export function validateReportObject(report) {
     report.evidence.forEach((item, index) => {
       const label = `evidence[${index}]`;
       if (!validateObjectShape(item, label, OBJECT_FIELDS.evidence, errors)) return;
-      const expectedId = `E${String(index + 1).padStart(2, "0")}`;
+      const expectedId = sequentialId("E", index);
       if (item.id !== expectedId) errors.push(`${label}.id must be ${expectedId}`);
       if (evidenceIds.has(item.id)) errors.push(`Duplicate evidence id: ${item.id}`);
       evidenceIds.add(item.id);
@@ -277,7 +261,7 @@ export function validateReportObject(report) {
     report.adversarial_positions.forEach((position, index) => {
       const label = `adversarial_positions[${index}]`;
       const expected = expectedPositions[index];
-      const expectedId = `A${String(index + 1).padStart(2, "0")}`;
+      const expectedId = sequentialId("A", index);
       if (!validateObjectShape(position, label, OBJECT_FIELDS.position, errors)) return;
       if (position.id !== expectedId) errors.push(`${label}.id must be ${expectedId}`);
       if (positionIds.has(position.id)) errors.push(`Duplicate position id: ${position.id}`);
@@ -379,11 +363,7 @@ export function validateReportObject(report) {
     }
   }
 
-  if (!Array.isArray(report.mistakes_to_avoid) || report.mistakes_to_avoid.length < 3 || report.mistakes_to_avoid.length > 5) {
-    errors.push("mistakes_to_avoid must contain 3-5 items");
-  } else {
-    validateStringArray(report.mistakes_to_avoid, "mistakes_to_avoid", errors, { min: 3, max: 5 });
-  }
+  validateStringArray(report.mistakes_to_avoid, "mistakes_to_avoid", errors, { min: 3, max: 5 });
 
   if (validateObjectShape(report.next_action, "next_action", OBJECT_FIELDS.nextAction, errors)) {
     ["action", "why_now", "success_threshold", "kill_threshold"].forEach((field) => {
@@ -391,12 +371,11 @@ export function validateReportObject(report) {
     });
   }
 
-  return { errors, warnings };
+  return { errors };
 }
 
 export function validateHtml(html, report, jsonPath = null, htmlPath = null) {
   const errors = [];
-  const warnings = [];
 
   if (!html.toLowerCase().startsWith("<!doctype html>")) errors.push("HTML must start with <!doctype html>");
   let previousIndex = -1;
@@ -439,28 +418,23 @@ export function validateHtml(html, report, jsonPath = null, htmlPath = null) {
     if (jsonBase !== htmlBase) errors.push("JSON and HTML filenames must use the same slug/date suffix");
   }
 
-  return { errors, warnings };
+  return { errors };
 }
 
 export async function checkReport(jsonPath, htmlPath = null) {
   const startedAt = performance.now();
   const report = JSON.parse(await readFile(jsonPath, "utf8"));
-  const objectResult = validateReportObject(report);
-  const errors = [...objectResult.errors];
-  const warnings = [...objectResult.warnings];
+  const errors = [...validateReportObject(report).errors];
 
   if (htmlPath) {
     const html = await readFile(htmlPath, "utf8");
-    const htmlResult = validateHtml(html, report, jsonPath, htmlPath);
-    errors.push(...htmlResult.errors);
-    warnings.push(...htmlResult.warnings);
+    errors.push(...validateHtml(html, report, jsonPath, htmlPath).errors);
   }
 
   return {
     ok: errors.length === 0,
     errors,
-    warnings,
-    elapsed_ms: Number((performance.now() - startedAt).toFixed(2)),
+    elapsed_ms: elapsedMs(startedAt),
     summary: {
       slug: report.slug,
       verdict: report.recommendation?.verdict,
@@ -472,27 +446,16 @@ export async function checkReport(jsonPath, htmlPath = null) {
   };
 }
 
-async function main() {
-  const [, , jsonPath, htmlPath] = process.argv;
-  if (!jsonPath) {
-    console.error("Usage: node check-report.mjs <report.json> [report.html]");
-    process.exit(1);
-  }
-
-  const result = await checkReport(jsonPath, htmlPath);
-  const output = JSON.stringify(result, null, 2);
-  if (!result.ok) {
-    console.error(output);
-    process.exit(1);
-  }
-  console.log(output);
-}
-
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main().catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
-}
-
-export { REQUIRED_SECTIONS };
+runCli(
+  import.meta.url,
+  "Usage: node check-report.mjs <report.json> [report.html]",
+  async (jsonPath, htmlPath) => {
+    const result = await checkReport(jsonPath, htmlPath);
+    const output = JSON.stringify(result, null, 2);
+    if (!result.ok) {
+      console.error(output);
+      process.exit(1);
+    }
+    console.log(output);
+  },
+);

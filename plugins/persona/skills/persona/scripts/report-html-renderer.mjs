@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { elapsedMs, normalizeHttpUrl, runCli } from "./lib.mjs";
+import { SAMPLE_COUNT } from "./halton-sampler.mjs";
 
 const HTML_ESCAPE = {
   "&": "&amp;",
@@ -14,27 +15,15 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => HTML_ESCAPE[character]);
 }
 
-export function normalizeHttpUrl(value) {
-  if (typeof value !== "string" || !/^https?:\/\/\S+$/i.test(value)) return null;
-
-  try {
-    const url = new URL(value);
-    if (!["http:", "https:"].includes(url.protocol) || !url.hostname) return null;
-    return url.href;
-  } catch {
-    return null;
-  }
-}
-
 function sentence(value) {
   const text = String(value ?? "").trim();
   if (!text) return "";
   return /[.!?]$/.test(text) ? text : `${text}.`;
 }
 
-function renderList(items, className = "") {
+function renderList(items) {
   const content = (items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("\n");
-  return `<ul${className ? ` class="${className}"` : ""}>${content}</ul>`;
+  return `<ul>${content}</ul>`;
 }
 
 function renderEvidenceReference(item) {
@@ -119,16 +108,19 @@ function verdictClass(verdict) {
   return "test-first";
 }
 
-function renderShareSnippet(report, recommendation) {
+function renderShareSnippet(report) {
+  const recommendation = report.recommendation || {};
+  const nextAction = report.next_action || {};
   return `${escapeHtml(report.title)}
 Verdict: ${escapeHtml(recommendation.verdict)} (${escapeHtml(recommendation.confidence)} confidence)
 Why: ${escapeHtml(recommendation.decisive_reason)}
-Next: ${escapeHtml(report.next_action?.action)}`;
+Next: ${escapeHtml(nextAction.action)}`;
 }
 
 export function renderReportHtml(report) {
   const input = report.input || {};
   const recommendation = report.recommendation || {};
+  const nextAction = report.next_action || {};
   const language = /^[a-z]{2,3}(?:-[A-Z]{2})?$/.test(report.language || "") ? report.language : "en";
   const price = input.price ? sentence(input.price) : "Not specified.";
   const evidenceRows = renderEvidenceRows(report.evidence);
@@ -242,7 +234,7 @@ export function renderReportHtml(report) {
       <div class="metadata">
         <span><strong>Grounding:</strong> <code>${escapeHtml(report.grounding_mode)}</code></span>
         <span><strong>Idea type:</strong> <code>${escapeHtml(report.idea_type)}</code></span>
-        <span><strong>Coverage:</strong> <code>Halton sequence · 12 positions</code></span>
+        <span><strong>Coverage:</strong> <code>Halton sequence · ${SAMPLE_COUNT} positions</code></span>
         <span><strong>Created:</strong> ${escapeHtml(report.created_at)}</span>
       </div>
     </header>
@@ -251,7 +243,7 @@ export function renderReportHtml(report) {
       <h2>TL;DR</h2>
       <p class="tldr-lead">${escapeHtml(report.tldr)}</p>
       <p class="share-label">Share this verdict</p>
-      <pre class="share-snippet" aria-label="Shareable verdict">${renderShareSnippet(report, recommendation)}</pre>
+      <pre class="share-snippet" aria-label="Shareable verdict">${renderShareSnippet(report)}</pre>
     </section>
 
     <section id="product-snapshot">
@@ -299,7 +291,7 @@ export function renderReportHtml(report) {
 
     <section id="adversarial-coverage">
       <h2>Adversarial Coverage</h2>
-      <p>Six domain-specific dimensions generate 12 deterministic reasoning positions. These are structured counterpositions, not customers, probabilities, or market votes.</p>
+      <p>Six domain-specific dimensions generate ${SAMPLE_COUNT} deterministic reasoning positions. These are structured counterpositions, not customers, probabilities, or market votes.</p>
       <ul class="dimension-list">${renderDimensionSummary(report.adversarial_dimensions)}</ul>
       <div class="table-wrap">
         <table>
@@ -321,11 +313,11 @@ export function renderReportHtml(report) {
 
     <section id="do-this-now" class="action">
       <h2>Do This Now</h2>
-      <p><strong>Action:</strong> ${escapeHtml(report.next_action?.action)}</p>
-      <p><strong>Why now:</strong> ${escapeHtml(report.next_action?.why_now)}</p>
+      <p><strong>Action:</strong> ${escapeHtml(nextAction.action)}</p>
+      <p><strong>Why now:</strong> ${escapeHtml(nextAction.why_now)}</p>
       <div class="thresholds">
-        <div><strong>Success threshold</strong>${escapeHtml(report.next_action?.success_threshold)}</div>
-        <div><strong>Kill threshold</strong>${escapeHtml(report.next_action?.kill_threshold)}</div>
+        <div><strong>Success threshold</strong>${escapeHtml(nextAction.success_threshold)}</div>
+        <div><strong>Kill threshold</strong>${escapeHtml(nextAction.kill_threshold)}</div>
       </div>
     </section>
   </main>
@@ -343,22 +335,14 @@ export async function renderReportFile(inputPath, outputPath = null) {
   return {
     output: finalOutputPath,
     bytes: Buffer.byteLength(html),
-    elapsed_ms: Number((performance.now() - startedAt).toFixed(2)),
+    elapsed_ms: elapsedMs(startedAt),
   };
 }
 
-async function main() {
-  const [, , inputPath, outputPath] = process.argv;
-  if (!inputPath) {
-    console.error("Usage: node report-html-renderer.mjs <report.json> [report.html]");
-    process.exit(1);
-  }
-  console.log(JSON.stringify(await renderReportFile(inputPath, outputPath), null, 2));
-}
-
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main().catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
-}
+runCli(
+  import.meta.url,
+  "Usage: node report-html-renderer.mjs <report.json> [report.html]",
+  async (inputPath, outputPath) => {
+    console.log(JSON.stringify(await renderReportFile(inputPath, outputPath), null, 2));
+  },
+);

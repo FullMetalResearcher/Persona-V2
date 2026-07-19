@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { validateHtml, validateReportObject } from "../../plugins/persona/skills/persona/scripts/check-report.mjs";
 import { renderReportHtml } from "../../plugins/persona/skills/persona/scripts/report-html-renderer.mjs";
-import { clone, loadGoldenReport, makeUngrounded } from "./test-helpers.mjs";
+import { UNSAFE_URLS, loadGoldenReport, makeUngrounded } from "./test-helpers.mjs";
 
 function assertValid(report, message = "report should be valid") {
   const result = validateReportObject(report);
@@ -22,25 +22,25 @@ test("accepts valid reports in all grounding modes", async () => {
   const golden = await loadGoldenReport();
   assertValid(golden, "user-provided");
 
-  const webGrounded = clone(golden);
+  const webGrounded = structuredClone(golden);
   webGrounded.grounding_mode = "web-grounded";
   webGrounded.evidence.forEach((item, index) => {
     item.url = `https://example.com/evidence-${index + 1}`;
   });
   assertValid(webGrounded, "web-grounded");
 
-  assertValid(makeUngrounded(clone(golden)), "ungrounded");
+  assertValid(makeUngrounded(structuredClone(golden)), "ungrounded");
 });
 
 test("requires a plain-language tldr", async () => {
   const golden = await loadGoldenReport();
 
-  const missing = clone(golden);
+  const missing = structuredClone(golden);
   delete missing.tldr;
   assertInvalid(missing, /Missing top-level field: tldr/);
 
   for (const jargon of ["Halton", "adversarial", "counterposition", "grounded"]) {
-    const report = clone(golden);
+    const report = structuredClone(golden);
     report.tldr = `This ${jargon} analysis recommends Build.`;
     assertInvalid(report, /tldr must use plain language without method jargon/);
   }
@@ -48,33 +48,25 @@ test("requires a plain-language tldr", async () => {
 
 test("rejects invalid and unsafe input and evidence URLs", async () => {
   const golden = await loadGoldenReport();
-  const unsafe = [
-    "javascript:alert(document.domain)",
-    "data:text/html,<h1>x</h1>",
-    "file:///etc/passwd",
-    " JaVaScRiPt:alert(1)",
-    "java\nscript:alert(1)",
-    "https://example.com/space here",
-  ];
 
-  for (const url of unsafe) {
-    const evidenceReport = clone(golden);
+  for (const url of UNSAFE_URLS) {
+    const evidenceReport = structuredClone(golden);
     evidenceReport.evidence[0].url = url;
     assertInvalid(evidenceReport, /evidence\[0\]\.url must be an absolute HTTP\(S\) URL/);
 
-    const inputReport = clone(golden);
+    const inputReport = structuredClone(golden);
     inputReport.input.links = [url];
     assertInvalid(inputReport, /input\.links\[0\] must be an absolute HTTP\(S\) URL/);
   }
 
   for (const url of ["http://example.com/path", "HTTPS://example.com/path?q=1"] ) {
-    const report = clone(golden);
+    const report = structuredClone(golden);
     report.input.links = [url];
     report.evidence[0].url = url;
     assertValid(report);
   }
 
-  const wrongType = clone(golden);
+  const wrongType = structuredClone(golden);
   wrongType.input.links = [42];
   assertInvalid(wrongType, /input\.links\[0\]/);
 });
@@ -93,7 +85,7 @@ test("rejects unknown fields in every fixed nested object", async () => {
   ];
 
   for (const [label, select] of targets) {
-    const report = clone(golden);
+    const report = structuredClone(golden);
     select(report).unexpected = true;
     assertInvalid(report, /Unknown .* field: unexpected/);
   }
@@ -113,7 +105,7 @@ test("rejects missing required fields in every fixed nested object", async () =>
   ];
 
   for (const [select, field] of targets) {
-    const report = clone(golden);
+    const report = structuredClone(golden);
     delete select(report)[field];
     assertInvalid(report, new RegExp(`${field} is required|${field} must`));
   }
@@ -122,51 +114,51 @@ test("rejects missing required fields in every fixed nested object", async () =>
 test("rejects malformed arrays, wrong item types, and duplicate items", async () => {
   const golden = await loadGoldenReport();
 
-  const malformed = clone(golden);
+  const malformed = structuredClone(golden);
   malformed.mistakes_to_avoid = "not an array";
-  assertInvalid(malformed, /mistakes_to_avoid must contain 3-5 items/);
+  assertInvalid(malformed, /mistakes_to_avoid must be an array/);
 
-  const wrongReferenceType = clone(golden);
+  const wrongReferenceType = structuredClone(golden);
   wrongReferenceType.decision_factors[0].evidence_ids = [42];
   assertInvalid(wrongReferenceType, /must be a non-empty string/);
 
-  const duplicateLinks = clone(golden);
+  const duplicateLinks = structuredClone(golden);
   duplicateLinks.input.links = ["https://example.com/a", "https://example.com/a"];
   assertInvalid(duplicateLinks, /input\.links must not contain duplicate items/);
 
-  const duplicateStrings = clone(golden);
+  const duplicateStrings = structuredClone(golden);
   duplicateStrings.recommendation.evidence_limits = ["same", "same"];
   assertInvalid(duplicateStrings, /recommendation\.evidence_limits must not contain duplicate items/);
 
-  const duplicateObjects = clone(golden);
-  duplicateObjects.decision_factors[1] = clone(duplicateObjects.decision_factors[0]);
+  const duplicateObjects = structuredClone(golden);
+  duplicateObjects.decision_factors[1] = structuredClone(duplicateObjects.decision_factors[0]);
   assertInvalid(duplicateObjects, /decision_factors must not contain duplicate items/);
 });
 
 test("rejects duplicate, missing, and unresolved evidence and position IDs", async () => {
   const golden = await loadGoldenReport();
 
-  const duplicateEvidence = clone(golden);
+  const duplicateEvidence = structuredClone(golden);
   duplicateEvidence.evidence[1].id = "E01";
   assertInvalid(duplicateEvidence, /Duplicate evidence id/);
 
-  const missingEvidence = clone(golden);
+  const missingEvidence = structuredClone(golden);
   missingEvidence.evidence[1].id = "E09";
   assertInvalid(missingEvidence, /evidence\[1\]\.id must be E02/);
 
-  const unresolvedEvidence = clone(golden);
+  const unresolvedEvidence = structuredClone(golden);
   unresolvedEvidence.adversarial_positions[0].evidence_ids = ["E99"];
   assertInvalid(unresolvedEvidence, /references unknown id: E99/);
 
-  const emptyEvidenceReferences = clone(golden);
+  const emptyEvidenceReferences = structuredClone(golden);
   emptyEvidenceReferences.hard_nos[0].evidence_ids = [];
   assertInvalid(emptyEvidenceReferences, /must contain at least one reference/);
 
-  const duplicatePosition = clone(golden);
+  const duplicatePosition = structuredClone(golden);
   duplicatePosition.adversarial_positions[1].id = "A01";
   assertInvalid(duplicatePosition, /Duplicate position id/);
 
-  const unresolvedPosition = clone(golden);
+  const unresolvedPosition = structuredClone(golden);
   unresolvedPosition.hard_nos[0].position_ids = ["A99"];
   assertInvalid(unresolvedPosition, /references unknown id: A99/);
 });
@@ -175,15 +167,15 @@ test("rejects invalid sampling coordinates and dimension values", async () => {
   const golden = await loadGoldenReport();
   const firstDimension = golden.adversarial_dimensions[0].name;
 
-  const coordinate = clone(golden);
+  const coordinate = structuredClone(golden);
   coordinate.adversarial_positions[0].sampling_coordinates[firstDimension] = 1;
   assertInvalid(coordinate, /does not match deterministic Halton sampling/);
 
-  const dimensionValue = clone(golden);
+  const dimensionValue = structuredClone(golden);
   dimensionValue.adversarial_positions[0].dimension_values[firstDimension] = "invented bucket";
   assertInvalid(dimensionValue, /does not match deterministic Halton sampling/);
 
-  const extraKey = clone(golden);
+  const extraKey = structuredClone(golden);
   extraKey.adversarial_positions[0].sampling_coordinates.extra = 0.5;
   assertInvalid(extraKey, /keys must match adversarial_dimensions in order/);
 });
@@ -191,26 +183,26 @@ test("rejects invalid sampling coordinates and dimension values", async () => {
 test("rejects invalid dates and verdict-confidence combinations", async () => {
   const golden = await loadGoldenReport();
 
-  const invalidLanguage = clone(golden);
+  const invalidLanguage = structuredClone(golden);
   invalidLanguage.language = "e";
   assertInvalid(invalidLanguage, /language must be a string with at least 2 characters/);
 
-  const invalidDate = clone(golden);
+  const invalidDate = structuredClone(golden);
   invalidDate.created_at = "2026-02-30";
   assertInvalid(invalidDate, /real calendar date/);
 
-  const highUngrounded = makeUngrounded(clone(golden));
+  const highUngrounded = makeUngrounded(structuredClone(golden));
   highUngrounded.recommendation.confidence = "high";
   assertInvalid(highUngrounded, /ungrounded reports must use.*low/);
 
-  const buildWithoutDemand = clone(golden);
+  const buildWithoutDemand = structuredClone(golden);
   buildWithoutDemand.recommendation.verdict = "Build";
   buildWithoutDemand.evidence.forEach((item) => {
     item.type = "alternative";
   });
   assertInvalid(buildWithoutDemand, /Build requires direct/);
 
-  const buildWithFatal = clone(golden);
+  const buildWithFatal = structuredClone(golden);
   buildWithFatal.recommendation.verdict = "Build";
   buildWithFatal.hard_nos[0].severity = "fatal";
   assertInvalid(buildWithFatal, /Build cannot have an unresolved fatal Hard No/);
