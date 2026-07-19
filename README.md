@@ -19,7 +19,7 @@ project builders. It turns an idea into one local decision memo with a clear
 - The evidence that would reverse the decision.
 - One immediate test with observable success and kill thresholds.
 - A plain-language TL;DR and copyable verdict snippet you can share.
-- A self-contained HTML report plus structured JSON for future use.
+- A readable Markdown report plus structured JSON for future use.
 
 The report is direct about uncertainty:
 
@@ -85,11 +85,11 @@ Reports are written to the current project:
 
 ```text
 reports/<english-slug>-YYYY-MM-DD.json
-reports/<english-slug>-YYYY-MM-DD.html
+reports/<english-slug>-YYYY-MM-DD.md
 ```
 
-The JSON is the source of truth. The self-contained HTML report opens with the
-TL;DR and shareable verdict, and it can be printed to PDF from the browser.
+The JSON is the source of truth. The Markdown report opens with the TL;DR and
+shareable verdict, and renders natively on GitHub and in common note-taking apps.
 
 ## How It Works
 
@@ -137,12 +137,15 @@ build` remain in English so reports stay structurally consistent.
 Both report files stay under `reports/` in the project where you ran Persona.
 They are not committed or published automatically.
 
+For printing, use the gstack `/make-pdf` skill or any Markdown-to-PDF tool; Persona
+no longer bundles browser print styles.
+
 ### Does everything stay local?
 
-The JSON and self-contained, JavaScript-free HTML artifacts are generated
-locally and use no external assets. In `web-grounded` mode, search queries still
-go through the browsing provider available to your agent; Persona uses
-generalized search terms when an idea appears private or proprietary.
+The JSON and Markdown artifacts are generated locally and use no external
+assets. In `web-grounded` mode, search queries still go through the browsing
+provider available to your agent; Persona uses generalized search terms when an
+idea appears private or proprietary.
 
 ## Update
 
@@ -177,7 +180,7 @@ node --test tests/persona/*.test.mjs
 ```
 
 CI also checks JavaScript syntax, parses every product JSON file, verifies the
-golden JSON and HTML artifacts byte for byte, scans for secrets, and rejects
+golden JSON and Markdown artifacts byte for byte, scans for secrets, and rejects
 tracked local reports.
 
 ## Feedback
